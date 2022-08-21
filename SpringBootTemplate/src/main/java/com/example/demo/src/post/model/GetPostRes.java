@@ -24,5 +24,4 @@ public class GetPostRes {
     private String deliveryFee;
     private String exchange;
     private String postContent;
-    private
 }

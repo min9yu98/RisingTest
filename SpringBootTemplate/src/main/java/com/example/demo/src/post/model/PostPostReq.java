@@ -12,8 +12,10 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PostPostReq {
     private String postImg_url;
-    private int price;
     private String postTItle;
+    private int category_idx;
+    private int price;
+    private String hashTagName;
     private String userRegion; // 유저의 사는 곳
     private String postingTime;
     private int viewNum; // 조횟수
