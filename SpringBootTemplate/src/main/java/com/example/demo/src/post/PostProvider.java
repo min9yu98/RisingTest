@@ -1,8 +1,8 @@
 package com.example.demo.src.post;
 
 import com.example.demo.config.BaseException;
+import com.example.demo.src.post.model.GetPostLikeRes;
 import com.example.demo.src.post.model.GetPostsRes;
-import com.fasterxml.jackson.databind.ser.Serializers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +22,9 @@ public class PostProvider {
         this.postDao = postDao;
     }
 
-    public List<GetPostsRes> getPosts() throws BaseException {
+    public List<GetPostsRes> getPosts(int userIdx) throws BaseException {
         try {
-            List<GetPostsRes> getPostRes = postDao.getPosts();
+            List<GetPostsRes> getPostRes = postDao.getPosts(userIdx);
             return getPostRes;
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);

@@ -33,7 +33,7 @@ public class PostController {
     @GetMapping("/{userIdx}/posts") // 로그인 때문에
     public BaseResponse<List<GetPostsRes>> getPosts(@PathVariable("userIdx") int userIdx) {
         try {
-            List<GetPostsRes> getPostingsRes = postProvider.getPosts();
+            List<GetPostsRes> getPostingsRes = postProvider.getPosts(userIdx);
             return new BaseResponse<>(getPostingsRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
@@ -46,6 +46,8 @@ public class PostController {
     {
         if (postPostReq.getPostImg_url() == null){
             return new BaseResponse<>(POST_POST_EMPTY_POST_IMG);
+        } else if (postPostReq.getPostImg_url().size() > 12){
+            return new BaseResponse<>(POST_POST_OVER_POST_IMG);
         }
         if (postPostReq.getPostTitle() == null){
             return new BaseResponse<>(POST_POST_INVALID_TITLE);
@@ -59,6 +61,7 @@ public class PostController {
         if (postPostReq.getPrice() == 0) {
             return new BaseResponse<>(POST_POST_EMPTY_PRICE);
         }
+
 
         try {
             PostPostRes postPostRes = postService.registerPost(postPostReq, userIdx);

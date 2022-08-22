@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetPostsRes {
-    private String likeStatus; // 관심(찜)이 있는 상태인지 확인 -> 유저가 찜했다면 true 반환
     private String postImg_url; // 게시글의 사진
     private int price; // 가격
     private String postTitle; // 게시글 제목
