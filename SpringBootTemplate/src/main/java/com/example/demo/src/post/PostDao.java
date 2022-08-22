@@ -1,12 +1,10 @@
 package com.example.demo.src.post;
 
-import com.example.demo.config.BaseResponse;
-import com.example.demo.src.post.model.GetPostLikeRes;
+import com.example.demo.src.post.model.GetPostSearchRes;
 import com.example.demo.src.post.model.GetPostsRes;
 import com.example.demo.src.post.model.PostPostReq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -36,6 +34,7 @@ public class PostDao {
                 "LEFT OUTER JOIN Zzim Z on P.postIdx = Z.postIdx " +
                 "where P.status = 'A' " +
                 "group by PI.postIdx, P.postIdx";
+
         return this.jdbcTemplate.query(getPostsQuery,
                 (rs, rowNum) -> new GetPostsRes(
                         rs.getString("postImg_url"),
@@ -44,7 +43,7 @@ public class PostDao {
                         rs.getString("tradeRegion"),
                         rs.getString("postingTime"),
                         rs.getString("payStatus"),
-                        rs.getInt("likeNum")) // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
+                        rs.getLong("likeNum")) // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
         );
     }
 
@@ -95,6 +94,27 @@ public class PostDao {
             this.jdbcTemplate.update(registerPostTagQuery, registerPostTagParams);
         }
         return postIdx;
+    }
+
+    public List<GetPostSearchRes> getQueryPosts(String query) {
+        String getQueryPostsQuery = "select (select PI.postImg_url LIMIT 1) as postImg_url, P.price, P.postTitle, " +
+                "P.payStatus " +
+                "from Post P " +
+                "LEFT OUTER JOIN PostImg PI on P.postIdx = PI.postIdx " +
+                "LEFT OUTER JOIN Zzim Z on P.postIdx = Z.postIdx " +
+                "LEFT OUTER JOIN HashTag HT on P.postIdx = HT.postIdx " +
+                "where ((LOCATE(" + query + ", P.postTitle) > 0) or (LOCATE(" + query + ", P.postContent) > 0) or " +
+                "(LOCATE(" + query + ", HT.hashTagName) > 0) " +
+                "and P.status = 'A') " +
+                "group by PI.postIdx, P.postIdx";
+        return this.jdbcTemplate.query(getQueryPostsQuery,
+                (rs, rowNum) -> new GetPostSearchRes(
+                        rs.getString("postImg_url"),
+                        rs.getInt("price"),
+                        rs.getString("postTitle"),
+                        rs.getBoolean("payStatus")
+                        ) // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
+        );
     }
 }
 

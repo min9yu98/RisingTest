@@ -4,6 +4,8 @@ package com.example.demo.src.post;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.src.post.model.*;
+import org.apache.tomcat.util.json.JSONParser;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +36,19 @@ public class PostController {
     public BaseResponse<List<GetPostsRes>> getPosts(@PathVariable("userIdx") int userIdx) {
         try {
             List<GetPostsRes> getPostingsRes = postProvider.getPosts(userIdx);
+            BaseResponse get = new BaseResponse<>(getPostingsRes);
             return new BaseResponse<>(getPostingsRes);
         } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @GetMapping("/search")
+    public BaseResponse<List<GetPostSearchRes>> getQueryPosts(@RequestParam(name="query") String query){
+        try {
+            List<GetPostSearchRes> getPostsRes = postProvider.getQueryPosts(query);
+            return new BaseResponse<>(getPostsRes);
+        } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }
     }

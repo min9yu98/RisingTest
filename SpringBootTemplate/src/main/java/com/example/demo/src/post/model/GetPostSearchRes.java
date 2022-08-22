@@ -9,6 +9,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetPostLikeRes {
-    private int postIdx;
+public class GetPostSearchRes {
+    private String postImg_url;
+    private int price;
+    private String postTitle;
+    private boolean payStatus;
 }

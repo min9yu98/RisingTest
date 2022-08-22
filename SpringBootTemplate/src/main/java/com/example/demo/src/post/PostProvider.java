@@ -1,7 +1,7 @@
 package com.example.demo.src.post;
 
 import com.example.demo.config.BaseException;
-import com.example.demo.src.post.model.GetPostLikeRes;
+import com.example.demo.src.post.model.GetPostSearchRes;
 import com.example.demo.src.post.model.GetPostsRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +27,15 @@ public class PostProvider {
             List<GetPostsRes> getPostRes = postDao.getPosts(userIdx);
             return getPostRes;
         } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public List<GetPostSearchRes> getQueryPosts(String query) throws BaseException{
+        try {
+            List<GetPostSearchRes> getPostsRes = postDao.getQueryPosts(query);
+            return getPostsRes;
+        } catch(Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
     }
