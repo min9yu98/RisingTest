@@ -29,8 +29,12 @@ public enum BaseResponseStatus {
     POST_USERS_EMPTY_EMAIL(false, 2015, "이메일을 입력해주세요."),
     POST_USERS_INVALID_EMAIL(false, 2016, "이메일 형식을 확인해주세요."),
     POST_USERS_EXISTS_EMAIL(false,2017,"중복된 이메일입니다."),
-
-
+    POST_POST_INVALID_TITLE(false, 2018, "상품명을 2글자 이상 입력해주세요."),
+    POST_POST_EMPTY_CATEGORY(false, 2019, "카테고리를 선택해주세요."),
+    POST_POST_EMPTY_PRICE(false, 2020, "가격을 입력해주세요."),
+    POST_POST_EMPTY_POST_IMG(false, 2021, "상품 사진을 등록해주세요."),
+    POST_POST_EMPTY_TAG(false, 2022, "태그를 입력해주세요."),
+    POST_POST_NOT_ENOUGH_PRICE(false, 2023, "100원 이상 입력해주세요."),
 
     /**
      * 3000 : Response 오류
