@@ -4,8 +4,6 @@ package com.example.demo.src.post;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.src.post.model.*;
-import org.apache.tomcat.util.json.JSONParser;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,21 +31,54 @@ public class PostController {
 
     @ResponseBody
     @GetMapping("/{userIdx}/posts") // 로그인 때문에
-    public BaseResponse<List<GetPostsRes>> getPosts(@PathVariable("userIdx") int userIdx) {
+    public BaseResponse<List<GetPostsRes>> getPosts(@PathVariable("userIdx") long userIdx) {
         try {
             List<GetPostsRes> getPostingsRes = postProvider.getPosts(userIdx);
-            BaseResponse get = new BaseResponse<>(getPostingsRes);
             return new BaseResponse<>(getPostingsRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
 
-    @GetMapping("/search")
+    @ResponseBody
+    @GetMapping("/{userIdx}/posts/{postIdx}")
+    public BaseResponse<GetPostRes> getPost(@PathVariable("userIdx") long userIdx, @PathVariable("postIdx") long postIdx){
+        try{
+            GetPostRes getPostRes = postProvider.getPost(userIdx);
+            return new BaseResponse<>(getPostRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    // 상품 검색시 상품들
+    @GetMapping("/search-prod")
     public BaseResponse<List<GetPostSearchRes>> getQueryPosts(@RequestParam(name="query") String query){
         try {
             List<GetPostSearchRes> getPostsRes = postProvider.getQueryPosts(query);
             return new BaseResponse<>(getPostsRes);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    // 상품 검색시 상품들 이름 목록
+    @GetMapping("/search-prod-list")
+    public BaseResponse<List<GetPostSearchQueryRes>> getQueryPostList(@RequestParam(name="query") String query){
+        try {
+            List<GetPostSearchQueryRes> getPostSearchQueryRes = postProvider.getQueryPostList(query);
+            return new BaseResponse<>(getPostSearchQueryRes);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    // 상점 검색시 상점들 이름 목록
+    @GetMapping("/search-store-list")
+    public BaseResponse<List<GetPostStoreSearchQueryRes>> getQueryStoreList(@RequestParam(name="query") String query){
+        try {
+            List<GetPostStoreSearchQueryRes> getStorePostsRes = postProvider.getQueryStoreList(query);
+            return new BaseResponse<>(getStorePostsRes);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }
