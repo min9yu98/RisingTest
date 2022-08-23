@@ -4,6 +4,7 @@ package com.example.demo.src.post;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.src.post.model.get.*;
+import com.example.demo.src.post.model.patch.PatchDeletePostReq;
 import com.example.demo.src.post.model.post.PostPostReq;
 import com.example.demo.src.post.model.post.PostPostRes;
 import org.slf4j.Logger;
@@ -140,6 +141,22 @@ public class PostController {
             PostPostRes postPostRes = postService.registerPost(postPostReq, userIdx);
             return new BaseResponse<>(postPostRes);
         } catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PatchMapping("/{userIdx}/delete/{postIdx}")
+    public BaseResponse<String> deletePost(@PathVariable("userIdx") long userIdx, @PathVariable("postIdx") long postIdx){
+        try {
+            PatchDeletePostReq patchDeletePostReq = new PatchDeletePostReq(userIdx, postIdx);
+            int result = postService.deletePost(patchDeletePostReq);
+
+            if (result == 0) return new BaseResponse<>(PATCH_DELETE_FAIL_POST);
+
+            String resultMessage = "게시글이 삭제되었습니다.";
+            return new BaseResponse<>(resultMessage);
+        } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
     }

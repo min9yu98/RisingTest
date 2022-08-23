@@ -36,6 +36,7 @@ public enum BaseResponseStatus {
     POST_POST_EMPTY_TAG(false, 2022, "태그를 입력해주세요."),
     POST_POST_NOT_ENOUGH_PRICE(false, 2023, "100원 이상 입력해주세요."),
     POST_POST_OVER_POST_IMG(false, 2024, "입력 가능한 사진 갯수를 초과하였습니다."),
+    PATCH_DELETE_FAIL_POST(false, 2025, "삭제에 실패하였습니다."),
 
     /**
      * 3000 : Response 오류
