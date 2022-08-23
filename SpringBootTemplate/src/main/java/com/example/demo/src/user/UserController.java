@@ -63,13 +63,6 @@ public class UserController {
         //  @RequestBody란, 클라이언트가 전송하는 HTTP Request Body(우리는 JSON으로 통신하니, 이 경우 body는 JSON)를 자바 객체로 매핑시켜주는 어노테이션
         // TODO: email 관련한 짧은 validation 예시입니다. 그 외 더 부가적으로 추가해주세요!
         // email에 값이 존재하는지, 빈 값으로 요청하지는 않았는지 검사합니다. 빈값으로 요청했다면 에러 메시지를 보냅니다.
-        if (postUserReq.getEmail() == null) {
-            return new BaseResponse<>(POST_USERS_EMPTY_EMAIL);
-        }
-        //이메일 정규표현: 입력받은 이메일이 email@domain.xxx와 같은 형식인지 검사합니다. 형식이 올바르지 않다면 에러 메시지를 보냅니다.
-        if (!isRegexEmail(postUserReq.getEmail())) {
-            return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
-        }
         try {
             PostUserRes postUserRes = userService.createUser(postUserReq);
             return new BaseResponse<>(postUserRes);
@@ -171,7 +164,7 @@ public class UserController {
             //같다면 유저네임 변경
   **************************************************************************
  */
-            PatchUserReq patchUserReq = new PatchUserReq(userIdx, user.getNickname());
+            PatchUserReq patchUserReq = new PatchUserReq(userIdx, user.getUserName());
             userService.modifyUserName(patchUserReq);
 
             String result = "회원정보가 수정되었습니다.";
