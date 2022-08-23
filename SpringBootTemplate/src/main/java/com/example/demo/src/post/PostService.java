@@ -1,14 +1,12 @@
 package com.example.demo.src.post;
 
 import com.example.demo.config.BaseException;
-import com.example.demo.src.post.model.PostPostReq;
-import com.example.demo.src.post.model.PostPostRes;
+import com.example.demo.src.post.model.post.PostPostReq;
+import com.example.demo.src.post.model.post.PostPostRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 

@@ -1,6 +1,7 @@
 package com.example.demo.src.post;
 
-import com.example.demo.src.post.model.*;
+import com.example.demo.src.post.model.get.*;
+import com.example.demo.src.post.model.post.PostPostReq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -18,6 +19,7 @@ public class PostDao {
     }
 
 
+    // 게시글 전체 조회
     public List<GetPostsRes> getPosts(long userIdx) {
         String getPostsQuery = "select P.postIdx, (select PI.postImg_url LIMIT 1) as postImg_url, P.price, P.postTitle, P.tradeRegion, " +
                 "(select " +
@@ -28,7 +30,7 @@ public class PostDao {
                 "when timestampdiff(hour, P.createAt, current_timestamp) < 24 " +
                 "then concat(timestampdiff(hour, P.createAt, current_timestamp), '시간 전') " +
                 "else concat(datediff(current_timestamp, P.createAt), '일 전') " +
-                "end)) as postingTime, P.payStatus, COUNT(DISTINCT Z.zzimIdx) as likeNum " +
+                "end)) as postingTime, IF(P.payStatus='N', false, true) as payStatus, COUNT(DISTINCT Z.zzimIdx) as likeNum, P.sellingStatus " +
                 "from Post P " +
                 "LEFT OUTER JOIN PostImg PI on P.postIdx = PI.postIdx " +
                 "LEFT OUTER JOIN Zzim Z on P.postIdx = Z.postIdx " +
@@ -43,12 +45,13 @@ public class PostDao {
                         rs.getString("postTitle"),
                         rs.getString("tradeRegion"),
                         rs.getString("postingTime"),
-                        rs.getString("payStatus"),
-                        rs.getLong("likeNum")) // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
+                        rs.getBoolean("payStatus"),
+                        rs.getLong("likeNum"),
+                        rs.getString("sellingStatus")) // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
         );
     }
 
-
+    // 게시글 등록
     public long registerPost(PostPostReq postPostReq, long userIdx) {
         String registerPostQuery = "insert into " +
                 "Post(userIdx, tradeRegion, postTitle, postContent, categoryIdx, price, deliveryFee, quantity, prodStatus, exchange, payStatus) " +
@@ -96,9 +99,10 @@ public class PostDao {
         return postIdx;
     }
 
+    // 게시글 검색 결과
     public List<GetPostSearchRes> getQueryPosts(String query) {
         String getQueryPostsQuery = "select P.postIdx, (select PI.postImg_url LIMIT 1) as postImg_url, P.price, P.postTitle, " +
-                "P.payStatus " +
+                "IF(P.payStatus='N', false, true) as payStatus, P.sellingStatus " +
                 "from Post P " +
                 "LEFT OUTER JOIN PostImg PI on P.postIdx = PI.postIdx " +
                 "LEFT OUTER JOIN Zzim Z on P.postIdx = Z.postIdx " +
@@ -113,7 +117,8 @@ public class PostDao {
                         rs.getString("postImg_url"),
                         rs.getInt("price"),
                         rs.getString("postTitle"),
-                        rs.getBoolean("payStatus")
+                        rs.getBoolean("payStatus"),
+                        rs.getString("sellingStatus")
                         ) // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
         );
     }
@@ -160,10 +165,64 @@ public class PostDao {
                 ));
     }
 
+    // 게시글 상세정보 조회
     public GetPostRes getPost(long userIdx) {
-        String getPostQuery = "";
+        String getPostQuery = "select P.postIdx, P.price, IF(P.payStatus='N', false, true) as payStatus, P.postTitle, P.tradeRegion, " +
+                "(select (case when timestampdiff(second, P.createAt, current_timestamp) < 60 " +
+                "then concat(timestampdiff(second, P.createAt, current_timestamp), '초 전') " +
+                "when timestampdiff(minute, P.createAt, current_timestamp) < 60 " +
+                "then concat(timestampdiff(minute, P.createAt, current_timestamp), '분 전') " +
+                "when timestampdiff(hour, P.createAt, current_timestamp) < 24 " +
+                "then concat(timestampdiff(hour, P.createAt, current_timestamp), '시간 전') " +
+                "else concat(datediff(current_timestamp, P.createAt), '일 전') " +
+                "end)) as postingTime, P.view as viewNum, COUNT(DISTINCT Z.zzimIdx) as likeNum, " +
+                "COUNT(DISTINCT TR.talkRoomIdx) as chatNum, P.prodStatus, P.quantity, P.deliveryFee, P.exchange, P.postContent, P.sellingStatus " +
+                "from Post P " +
+                "LEFT OUTER JOIN Zzim Z on P.postIdx = Z.postIdx " +
+                "LEFT OUTER JOIN TalkRoom TR on P.postIdx = TR.postIdx " +
+                "where P.postIdx = 12 and P.status = 'A'";
         return this.jdbcTemplate.queryForObject(getPostQuery,
-                (rs, rowNum) -> new GetPostRes());
+                (rs, rowNum) -> new GetPostRes(
+                        rs.getLong("postIdx"),
+                        rs.getInt("price"),
+                        rs.getBoolean("payStatus"),
+                        rs.getString("postTitle"),
+                        rs.getString("tradeRegion"),
+                        rs.getString("postingTime"),
+                        rs.getLong("viewNum"),
+                        rs.getLong("likeNum"),
+                        rs.getLong("chatNum"),
+                        rs.getString("prodStatus"),
+                        rs.getLong("quantity"),
+                        rs.getString("deliveryFee"),
+                        rs.getString("exchange"),
+                        rs.getString("postContent"),
+                        rs.getString("sellingStatus")
+                ));
+    }
+
+    public List<GetPostImgRes> getImg(long userIdx, long postIdx) {
+        String getImgQuery = "select P.postIdx, PI.postImg_url " +
+                "from Post P " +
+                "LEFT OUTER JOIN PostImg PI on P.postIdx = PI.postIdx " +
+                "where P.postIdx = ? and P.status = 'A'";
+        return this.jdbcTemplate.query(getImgQuery,
+                (rs, rowNum) -> new GetPostImgRes(
+                        rs.getLong("postIdx"),
+                        rs.getString("postImg_url")
+                ), postIdx);
+    }
+
+    public List<GetPostTagRes> getTag(long userIdx, long postIdx) {
+        String getTagQuery = "select P.postIdx, HT.hashTagName " +
+                "from Post P " +
+                "LEFT OUTER JOIN HashTag HT on P.postIdx = HT.postIdx " +
+                "where P.postIdx = ? and P.status = 'A'";
+        return this.jdbcTemplate.query(getTagQuery,
+                (rs, rowNum) -> new GetPostTagRes(
+                        rs.getLong("postIdx"),
+                        rs.getString("hashTagName")
+                ), postIdx);
     }
 }
 

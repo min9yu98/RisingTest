@@ -1,13 +1,12 @@
 package com.example.demo.src.post;
 
 import com.example.demo.config.BaseException;
-import com.example.demo.src.post.model.*;
+import com.example.demo.src.post.model.get.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.print.attribute.standard.DateTimeAtCompleted;
 import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.DATABASE_ERROR;
@@ -62,6 +61,24 @@ public class PostProvider {
         try {
             GetPostRes getPostRes = postDao.getPost(userIdx);
             return getPostRes;
+        } catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public List<GetPostImgRes> getImg(long userIdx, long postIdx) throws BaseException{
+        try {
+            List<GetPostImgRes> getPostImgRes = postDao.getImg(userIdx, postIdx);
+            return getPostImgRes;
+        } catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public List<GetPostTagRes> getTag(long userIdx, long postIdx) throws BaseException{
+        try {
+            List<GetPostTagRes> getPostTagRes = postDao.getTag(userIdx, postIdx);
+            return getPostTagRes;
         } catch(Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
