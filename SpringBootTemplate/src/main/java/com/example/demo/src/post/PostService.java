@@ -25,7 +25,7 @@ public class PostService {
 
     @Autowired
     private final PostProvider postProvider;
-    public PostPostRes registerPost(PostPostReq postPostReq,  int userIdx) throws BaseException {
+    public PostPostRes registerPost(PostPostReq postPostReq, long userIdx) throws BaseException {
         if (postPostReq.getPostTitle().length() < 2) {
             throw new BaseException(POST_POST_INVALID_TITLE);
         }
@@ -34,7 +34,7 @@ public class PostService {
         }
 
         try {
-            int postIdx = postDao.registerPost(postPostReq, userIdx);
+            long postIdx = postDao.registerPost(postPostReq, userIdx);
             return new PostPostRes(postIdx);
         } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지를 보냅니다.
             throw new BaseException(DATABASE_ERROR);

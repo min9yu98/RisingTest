@@ -11,17 +11,17 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetPostRes {
-    private String postImg_url;
     private int price;
-    private String postTItle;
-    private String userRegion; // 유저의 사는 곳
-    private String postingTime;
-    private int viewNum; // 조횟수
-    private int interestNum; // 관심 수, 찜한 수
-    private int chatNum; // 채팅수
     private String prodStatus;
+    private String postTItle;
+    private String tradeRegion; // 유저의 사는 곳
+    private String postingTime;
+    private long viewNum; // 조횟수
+    private long interestNum; // 관심 수, 찜한 수
+    private long chatNum; // 채팅수
     private String quantity;
     private String deliveryFee;
     private String exchange;
     private String postContent;
 }
+// 사진과 해시태그는 따로 api (2 개)

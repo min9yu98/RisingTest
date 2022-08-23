@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetPostsRes {
+    private long postIdx;
     private String postImg_url; // 게시글의 사진
     private int price; // 가격
     private String postTitle; // 게시글 제목

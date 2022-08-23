@@ -5,12 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostPostRes {
-    private long postIdx;
+public class GetPostStoreSearchQueryRes {
+    private String profileImg_url;
+    private String storeName;
+    private long followerNum;
+    private long postNum;
 }

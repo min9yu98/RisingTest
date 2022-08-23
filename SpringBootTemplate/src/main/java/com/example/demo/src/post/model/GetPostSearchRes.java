@@ -10,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetPostSearchRes {
+    private long postIdx;
     private String postImg_url;
     private int price;
     private String postTitle;
