@@ -137,6 +137,22 @@ public class PostController {
         }
     }
 
+    @ResponseBody
+    @GetMapping("/category/{mainCategory}/{idx}")
+    public BaseResponse<List<GetCategoryPostRes>> getCategoryPost(@PathVariable("mainCategory") String mainCategory, @PathVariable("idx") int idx){
+        try {
+            if (mainCategory.equals("중고거래") || mainCategory.equals("\"중고거래\"")){
+                idx += 12;
+            } else if (mainCategory.equals("생활") || mainCategory.equals("\"생활\"")){
+                idx  += 33;
+            }
+            List<GetCategoryPostRes> getCategoryPostRes = postProvider.getCategoryPost(idx);
+            return new BaseResponse<>(getCategoryPostRes);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
     // 게시글 작성
     @ResponseBody
     @PostMapping("/{userIdx}/new")

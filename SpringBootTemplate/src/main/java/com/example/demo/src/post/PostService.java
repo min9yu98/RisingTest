@@ -16,14 +16,13 @@ public class PostService {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private final PostDao postDao;
-
+    @Autowired
+    private final PostProvider postProvider;
     public PostService(PostDao postDao, PostProvider postProvider) {
         this.postDao = postDao;
         this.postProvider = postProvider;
     }
 
-    @Autowired
-    private final PostProvider postProvider;
     public PostPostRes registerPost(PostPostReq postPostReq, long userIdx) throws BaseException {
         if (postPostReq.getPostTitle().length() < 2) {
             throw new BaseException(POST_POST_INVALID_TITLE);

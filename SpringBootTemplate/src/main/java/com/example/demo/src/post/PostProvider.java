@@ -101,4 +101,13 @@ public class PostProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    public List<GetCategoryPostRes> getCategoryPost(int idx) throws BaseException{
+        try {
+            List<GetCategoryPostRes> getCategoryPostRes = postDao.getCategoryPost(idx);
+            return getCategoryPostRes;
+        } catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

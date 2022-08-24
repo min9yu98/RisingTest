@@ -266,6 +266,24 @@ public class PostDao {
                 ), postIdx);
     }
 
+    public List<GetCategoryPostRes> getCategoryPost(int idx) {
+        String getCategoryPostQuery =
+                "select P.postIdx, (select DISTINCT PI.postImg_url LIMIT 1) as postImg_url, " +
+                "P.price, P.postTitle, IF(P.payStatus = 'N', false, true) as payStatus " +
+                "from Post P " +
+                "LEFt OUTER JOIN PostImg PI on P.postIdx = PI.postIdx " +
+                "where P.status='A' and P.categoryIdx = ? " +
+                "group by P.postIdx, PI.postIdx";
+        return this.jdbcTemplate.query(getCategoryPostQuery,
+                (rs, rowNum) -> new GetCategoryPostRes(
+                        rs.getLong("postIdx"),
+                        rs.getString("postImg_url"),
+                        rs.getInt("price"),
+                        rs.getString("postTitle"),
+                        rs.getBoolean("payStatus")
+                ), idx);
+    }
+
     public int deletePost(PatchDeletePostReq patchDeletePostReq) {
         String deletePostQuery = "update Post P " +
                 "LEFT OUTER JOIN HashTag HT on P.postIdx = HT.postIdx " +
