@@ -124,9 +124,41 @@ public class PostDao {
         );
     }
 
+    // 상점 검색시 조회되는 상점 정보
+    public GetPostStoreRes getQueryStore(long userIdx) {
+        String getQueryStoreQuery = "select U.storeName, U.userRegion, U.description " +
+                "from User U " +
+                "where U.userIdx = ?";
+        return this.jdbcTemplate.queryForObject(getQueryStoreQuery,
+                (rs, rowNum) -> new GetPostStoreRes(
+                        rs.getString("storeName"),
+                        rs.getString("userRegion"),
+                        rs.getString("description")
+                ), userIdx);
+    }
+
+    // 상점 검색시 조회되는 상점 게시글들
+    public List<GetPostStorePostRes> getQueryStorePost(long userIdx) {
+        String getQueryStorePostQuery = "select P.postIdx, (select DISTINCT PI.postImg_url LIMIT 1) as postImg_url, " +
+                "P.price, P.postTitle, IF(P.payStatus='N', false, true) as payStatus " +
+                "from Post P " +
+                "LEFT OUTER JOIN PostImg PI on P.postIdx = PI.postIdx " +
+                "LEFT OUTER JOIN User U on P.userIdx = U.userIdx " +
+                "where U.status='A' and P.status = 'A' and U.userIdx = ? " +
+                "group by P.postIdx";
+        return this.jdbcTemplate.query(getQueryStorePostQuery,
+                (rs, rowNum) -> new GetPostStorePostRes(
+                        rs.getLong("postIdx"),
+                        rs.getString("postImg_url"),
+                        rs.getInt("price"),
+                        rs.getString("postTitle"),
+                        rs.getBoolean("payStatus")
+                ), userIdx);
+    }
+
     // 상점 검색어 목록 (검색어를 검색했을 때 나오는 상품들 X, 상점 부분에서 상점이름들의 목록)
     public List<GetPostStoreSearchQueryRes> getQueryStoreList(String query) {
-        String getQueryStoreQuery = "select U.profileImg_url, U.storeName, COUNT(DISTINCT F.followeeUserIdx) as followerNum, " +
+        String getQueryStoreQuery = "select U.userIdx, U.profileImg_url, U.storeName, COUNT(DISTINCT F.followeeUserIdx) as followerNum, " +
                 "(select (case when P.status='A' THEN COUNT(DISTINCT P.postIdx) " +
                 "when P.status='D' THEN COUNT(DISTINCT P.postIdx) - 1 " +
                 "else (select 0) end)) as postNum " +
@@ -167,7 +199,15 @@ public class PostDao {
     }
 
     // 게시글 상세정보 조회
-    public GetPostRes getPost(long userIdx) {
+    public GetPostRes getPost(long userIdx, long postIdx) {
+        String registerPostImgQuery = "update Post " +
+                "set view = Post.view + 1 " +
+                "where postIdx = ?";
+        Object[] registerPostImgParams = new Object[]{
+                postIdx
+        };
+        this.jdbcTemplate.update(registerPostImgQuery, registerPostImgParams);
+
         String getPostQuery = "select P.postIdx, P.price, IF(P.payStatus='N', false, true) as payStatus, P.postTitle, P.tradeRegion, " +
                 "(select (case when timestampdiff(second, P.createAt, current_timestamp) < 60 " +
                 "then concat(timestampdiff(second, P.createAt, current_timestamp), '초 전') " +

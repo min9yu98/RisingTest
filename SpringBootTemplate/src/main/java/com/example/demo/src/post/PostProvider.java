@@ -39,6 +39,24 @@ public class PostProvider {
         }
     }
 
+    public GetPostStoreRes getQueryStore(long userIdx) throws BaseException{
+        try{
+            GetPostStoreRes getPostStoreRes = postDao.getQueryStore(userIdx);
+            return getPostStoreRes;
+        } catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public List<GetPostStorePostRes> getQueryStorePost(long userIdx) throws BaseException{
+        try {
+            List<GetPostStorePostRes> getPostStorePostRes = postDao.getQueryStorePost(userIdx);
+            return getPostStorePostRes;
+        } catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
     public List<GetPostStoreSearchQueryRes> getQueryStoreList(String query) throws BaseException{
         try {
             List<GetPostStoreSearchQueryRes> getPostStoreSearchRes = postDao.getQueryStoreList(query);
@@ -57,9 +75,9 @@ public class PostProvider {
         }
     }
 
-    public GetPostRes getPost(long userIdx) throws BaseException{
+    public GetPostRes getPost(long userIdx, long postIdx) throws BaseException{
         try {
-            GetPostRes getPostRes = postDao.getPost(userIdx);
+            GetPostRes getPostRes = postDao.getPost(userIdx, postIdx);
             return getPostRes;
         } catch(Exception exception){
             throw new BaseException(DATABASE_ERROR);
@@ -75,11 +93,11 @@ public class PostProvider {
         }
     }
 
-    public List<GetPostTagRes> getTag(long userIdx, long postIdx) throws BaseException{
+    public List<GetPostTagRes> getTag(long userIdx, long postIdx) throws BaseException {
         try {
             List<GetPostTagRes> getPostTagRes = postDao.getTag(userIdx, postIdx);
             return getPostTagRes;
-        } catch(Exception exception){
+        } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
     }

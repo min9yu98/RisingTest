@@ -49,7 +49,7 @@ public class PostController {
     @GetMapping("/{userIdx}/{postIdx}")
     public BaseResponse<GetPostRes> getPost(@PathVariable("userIdx") long userIdx, @PathVariable("postIdx") long postIdx){
         try{
-            GetPostRes getPostRes = postProvider.getPost(userIdx);
+            GetPostRes getPostRes = postProvider.getPost(userIdx, postIdx);
             return new BaseResponse<>(getPostRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
@@ -91,6 +91,30 @@ public class PostController {
         }
     }
 
+    // 상점정보
+    @ResponseBody
+    @GetMapping("/search-store/{userIdx}")
+    public BaseResponse<GetPostStoreRes> getQueryStore(@PathVariable("userIdx") long userIdx){
+        try{
+            GetPostStoreRes getPostStoreRes = postProvider.getQueryStore(userIdx);
+            return new BaseResponse<>(getPostStoreRes);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    // 상점의 게시글들
+    @ResponseBody
+    @GetMapping("/search-store/{userIdx}/posts")
+    public BaseResponse<List<GetPostStorePostRes>> getQueryStorePost(@PathVariable("userIdx") long userIdx){
+        try{
+            List<GetPostStorePostRes> getPostStorePostRes = postProvider.getQueryStorePost(userIdx);
+            return new BaseResponse<>(getPostStorePostRes);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
     // 상품 검색시 상품들 이름 목록 /search-prod-list?query=query
     @GetMapping("/search-prod-list")
     public BaseResponse<List<GetPostSearchQueryRes>> getQueryPostList(@RequestParam(name="query") String query){
@@ -116,7 +140,7 @@ public class PostController {
     // 게시글 작성
     @ResponseBody
     @PostMapping("/{userIdx}/new")
-    public BaseResponse<PostPostRes> registerPost(@RequestBody PostPostReq postPostReq, @PathVariable("userIdx") int userIdx)
+    public BaseResponse<PostPostRes> registerPost(@RequestBody PostPostReq postPostReq, @PathVariable("userIdx") long userIdx)
     {
         if (postPostReq.getPostImg_url() == null){
             return new BaseResponse<>(POST_POST_EMPTY_POST_IMG);
