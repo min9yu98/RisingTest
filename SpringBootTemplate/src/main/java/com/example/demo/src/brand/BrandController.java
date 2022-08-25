@@ -2,16 +2,14 @@ package com.example.demo.src.brand;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
-import com.example.demo.src.brand.model.GetBrandRes;
-import com.example.demo.src.brand.model.PatchDeleteBrandReq;
-import com.example.demo.src.brand.model.PostBrandReq;
-import com.example.demo.src.brand.model.PostBrandRes;
+import com.example.demo.src.brand.model.*;
 import com.example.demo.src.post.model.post.PostPostReq;
 import com.example.demo.src.post.model.post.PostPostRes;
 import com.fasterxml.jackson.databind.ser.Serializers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +18,7 @@ import static com.example.demo.config.BaseResponseStatus.*;
 import static com.example.demo.config.BaseResponseStatus.POST_POST_EMPTY_PRICE;
 
 @RestController
-@RequestMapping("/app/brand")
+@RequestMapping("/app/brands")
 public class BrandController {
     final Logger logger = LoggerFactory.getLogger(this.getClass()); // Log를 남기기: 일단은 모르고 넘어가셔도 무방합니다.
 
@@ -58,6 +56,18 @@ public class BrandController {
     }
 
     @ResponseBody
+    @PostMapping("/{userIdx}/follow/{brandIdx}")
+    public BaseResponse<PostFollowRes> followBrand(@PathVariable("userIdx") long userIdx,
+                                                   @PathVariable("brandIdx") long brandIdx){
+        try {
+            PostFollowRes postFollowRes = brandService.followBrand(userIdx, brandIdx);
+            return new BaseResponse<>(postFollowRes);
+        } catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
     @PatchMapping("/delete/{brandName}")
     public BaseResponse<String> deleteBrand(@PathVariable("brandName") String brandName){
         try {
@@ -75,6 +85,20 @@ public class BrandController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    @ResponseBody
+    @PatchMapping("/{userIdx}/follow-cancel/{brandIdx}")
+    public BaseResponse<String> cancelFollow(@PathVariable("userIdx") long userIdx, @PathVariable("brandIdx") long brandIdx){
+        try {
+            brandService.cancelFollow(userIdx, brandIdx);
+
+            String resultMessage = "팔로우가 취소되었습니다.";
+            return new BaseResponse<>(resultMessage);
+        } catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
 
     // 가나다순
     @ResponseBody
