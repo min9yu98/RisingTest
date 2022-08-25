@@ -5,8 +5,12 @@ import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.src.post.model.get.*;
 import com.example.demo.src.post.model.patch.PatchDeletePostReq;
+import com.example.demo.src.post.model.patch.PatchEditPostReq;
+import com.example.demo.src.post.model.patch.PatchEditPostRes;
 import com.example.demo.src.post.model.post.PostPostReq;
 import com.example.demo.src.post.model.post.PostPostRes;
+import com.example.demo.src.post.model.post.PostReviewReq;
+import com.example.demo.src.post.model.post.PostReviewRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +74,7 @@ public class PostController {
 
     // 게시글 해시태그 조회 API
     @ResponseBody
-    @GetMapping("/{userIdx}/{postIdx}/hashtag")
+    @GetMapping("/{userIdx}/{postIdx}/hashtags")
     public BaseResponse<List<GetPostTagRes>> getTag(@PathVariable("userIdx") long userIdx, @PathVariable("postIdx") long postIdx){
         try{
             List<GetPostTagRes> getPostTagRes = postProvider.getTag(userIdx, postIdx);
@@ -138,7 +142,7 @@ public class PostController {
     }
 
     @ResponseBody
-    @GetMapping("/category/{mainCategory}/{idx}")
+    @GetMapping("/categories/{mainCategory}/{idx}")
     public BaseResponse<List<GetCategoryPostRes>> getCategoryPost(@PathVariable("mainCategory") String mainCategory, @PathVariable("idx") int idx){
         try {
             if (mainCategory.equals("중고거래") || mainCategory.equals("\"중고거래\"")){
@@ -149,6 +153,22 @@ public class PostController {
             List<GetCategoryPostRes> getCategoryPostRes = postProvider.getCategoryPost(idx);
             return new BaseResponse<>(getCategoryPostRes);
         } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PostMapping("/reviews/{reviewerIdx}/write/{postIdx}")
+    public BaseResponse<PostReviewRes> registerReview(@RequestBody PostReviewReq postReviewReq,
+                                                      @PathVariable("reviewerIdx") long userIdx,
+                                                      @PathVariable("postIdx") long postIdx){
+        if (postReviewReq.getStarNum() == 0) return new BaseResponse<>(POST_REVIEW_INVALID_STAR_NUM);
+        if (postReviewReq.getReview() == null) return new BaseResponse<>(POST_REVIEW_EMPTY);
+
+        try {
+            PostReviewRes postReviewRes = postService.registerReview(postReviewReq, postIdx, userIdx);
+            return new BaseResponse<>(postReviewRes);
+        } catch (BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }
     }
@@ -180,6 +200,24 @@ public class PostController {
         try {
             PostPostRes postPostRes = postService.registerPost(postPostReq, userIdx);
             return new BaseResponse<>(postPostRes);
+        } catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @PatchMapping("/{userIdx}/edit/{postIdx}")
+    public BaseResponse<String> editPost(@RequestBody PatchEditPostReq patchEditPostReq, @PathVariable("userIdx") long userIdx, @PathVariable("postIdx") long postIdx){
+        try {
+            if (patchEditPostReq.getPostImg_url() != null && patchEditPostReq.getPostImg_url().size() > 12){
+                return new BaseResponse<>(POST_POST_OVER_POST_IMG);
+            }
+            int result = postService.editPost(patchEditPostReq, userIdx, postIdx);
+
+            if (result == 0) return new BaseResponse<>(PATCH_EDIT_FAIL_POST);
+
+            String resultMessage = "게시글이 수정되었습니다.";
+            return new BaseResponse<>(resultMessage);
         } catch (BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }

@@ -41,6 +41,9 @@ public enum BaseResponseStatus {
     POST_BRAND_EMPTY_NAME(false, 2027, "브랜드 한국어 이름을 입력해주세요."),
     POST_BRAND_EMPTY_ENG_NAME(false, 2028, "브랜드 영어 이름을 입력해주세요."),
     PATCH_DELETE_FAIL_BRAND(false, 2029, "브랜드 삭제에 실패하였습니다."),
+    PATCH_EDIT_FAIL_POST(false, 2030, "게시글 수정에 실패하였습니다."),
+    POST_REVIEW_INVALID_STAR_NUM(false, 2031, "별 개수를 정해주세요."),
+    POST_REVIEW_EMPTY(false, 2032, "리뷰를 작성해주세요."),
 
 
     /**

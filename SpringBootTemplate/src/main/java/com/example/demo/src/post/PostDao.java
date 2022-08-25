@@ -2,7 +2,10 @@ package com.example.demo.src.post;
 
 import com.example.demo.src.post.model.get.*;
 import com.example.demo.src.post.model.patch.PatchDeletePostReq;
+import com.example.demo.src.post.model.patch.PatchEditPostReq;
+import com.example.demo.src.post.model.patch.PatchEditPostRes;
 import com.example.demo.src.post.model.post.PostPostReq;
+import com.example.demo.src.post.model.post.PostReviewReq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -52,17 +55,32 @@ public class PostDao {
         );
     }
 
+    public long registerReview(PostReviewReq postReviewReq, long postIdx, long userIdx) {
+        String registerReviewQuery = "insert into PostReview(postIdx, userIdx, starNum, review) values (?, ?, ?, ?)";
+        Object[] registerReviewParams = new Object[]{
+                postIdx,
+                userIdx,
+                postReviewReq.getStarNum(),
+                postReviewReq.getReview()
+        };
+        this.jdbcTemplate.update(registerReviewQuery, registerReviewParams);
+        String lastInsertIdQuery = "select last_insert_id()";
+        return this.jdbcTemplate.queryForObject(lastInsertIdQuery, long.class);
+    }
+
     // 게시글 등록
     public long registerPost(PostPostReq postPostReq, long userIdx) {
         String registerPostQuery = "insert into " +
                 "Post(userIdx, tradeRegion, postTitle, postContent, categoryIdx, price, deliveryFee, quantity, prodStatus, exchange, payStatus) " +
                 "VALUES (?,?,?,?,?,?,?,?,?,?,?);"; // 실행될 동적 쿼리문
+        int categoryIdx = postPostReq.getCategoryIdx();
+        categoryIdx += 12;
         Object[] registerPostParams = new Object[]{
                 userIdx,
                 postPostReq.getTradeRegion(),
                 postPostReq.getPostTitle(),
                 postPostReq.getPostContent(),
-                postPostReq.getCategoryIdx(),
+                categoryIdx,
                 postPostReq.getPrice(),
                 postPostReq.getDeliveryFee(),
                 postPostReq.getQuantity(),
@@ -296,6 +314,168 @@ public class PostDao {
         Object[] deletePostParams = new Object[]{patchDeletePostReq.getPostIdx(), patchDeletePostReq.getUserIdx()}; // 주입될 값들(nickname, userIdx) 순
 
         return this.jdbcTemplate.update(deletePostQuery, deletePostParams);
+    }
+
+    public long editPost(PatchEditPostReq patchEditPostReq, long userIdx, long postIdx) {
+        // 게시글 사진 수정
+        List<String> postImg = patchEditPostReq.getPostImg_url();
+        if (postImg != null) {
+            String initialization = "update PostImg PI " +
+                    "LEFT OUTER JOIN Post P on PI.postIdx = P.postIdx " +
+                    "set PI.status = 'D' " +
+                    "where P.postIdx = ? and P.userIdx = ?";
+            Object[] registerPostImgParams1 = new Object[]{
+                    postIdx,
+                    userIdx
+            };
+            this.jdbcTemplate.update(initialization, registerPostImgParams1);
+            for (String str : postImg) {
+                String registerImg = "insert into PostImg(postIdx, postImg_url) " +
+                        "values((select postIdx from Post where userIdx = ? and postIdx = ?), ?)";
+                Object[] registerPostImgParams2 = new Object[]{
+                        userIdx,
+                        postIdx,
+                        str
+                };
+                this.jdbcTemplate.update(registerImg, registerPostImgParams2);
+            }
+        }
+
+        // 게시글 거래 지역 수정
+        if (patchEditPostReq.getTradeRegion() != null) {
+            String registerRegion = "update Post P " +
+                    "set P.tradeRegion = ? " +
+                    "where P.postIdx = ? and P.status = 'A' and P.userIdx = ?";
+            Object[] registerPostTRParams = new Object[]{
+                    patchEditPostReq.getTradeRegion(),
+                    postIdx,
+                    userIdx
+            };
+            this.jdbcTemplate.update(registerRegion, registerPostTRParams);
+        }
+
+        // 게시글 제목 수정
+        if (patchEditPostReq.getPostTitle() != null) {
+            String registerTitle = "update Post P " +
+                    "set P.postTitle= ? " +
+                    "where P.postIdx = ? and P.status = 'A' and P.userIdx = ?";
+            Object[] registerPostTitleParams = new Object[]{
+                    patchEditPostReq.getPostTitle(),
+                    postIdx,
+                    userIdx
+            };
+            this.jdbcTemplate.update(registerTitle, registerPostTitleParams);
+        }
+
+        if (patchEditPostReq.getCategoryIdx() != 0){
+            String registerCategory = "update Post P " +
+                    "set P.categoryIdx = ? " +
+                    "where P.postIdx = ? and P.status = 'A' and P.userIdx = ?";
+            int categoryIdx = patchEditPostReq.getCategoryIdx();
+            categoryIdx += 12;
+            Object[] registerPostCategoryParams = new Object[]{
+                    categoryIdx,
+                    postIdx,
+                    userIdx
+            };
+            this.jdbcTemplate.update(registerCategory, registerPostCategoryParams);
+        }
+
+        List<String> hashTag = patchEditPostReq.getHashTagName();
+        if (hashTag != null) {
+            String initialization2 = "update HashTag HT " +
+                    "LEFT OUTER JOIN Post P on HT.postIdx = P.postIdx " +
+                    "set HT.status = 'D' " +
+                    "where P.postIdx = ?  and P.userIdx = ?";
+            Object[] registerPostTagParams1 = new Object[]{
+                    postIdx,
+                    userIdx
+            };
+            this.jdbcTemplate.update(initialization2, registerPostTagParams1);
+
+            for (String str : hashTag) {
+                String registerTag = "insert into HashTag(postIdx, hashTagName) " +
+                        "values((select postIdx from Post where userIdx = ? and postIdx = ?), ?)";
+                Object[] registerPostTagParams2 = new Object[]{
+                        userIdx,
+                        postIdx,
+                        str
+                };
+                this.jdbcTemplate.update(registerTag, registerPostTagParams2);
+            }
+        }
+
+        if (patchEditPostReq.getPrice() != 0){
+            String registerPrice = "update Post P set P.price= ? where P.postIdx = ? and P.status = 'A' and P.userIdx = ?";
+            Object[] registerPostPriceParams = new Object[]{
+                    patchEditPostReq.getPrice(),
+                    postIdx,
+                    userIdx
+            };
+            this.jdbcTemplate.update(registerPrice, registerPostPriceParams);
+        }
+
+        if (patchEditPostReq.getDeliveryFee() != null){
+            String registerDeliveryFee = "update Post P set P.deliveryFee= ? where P.postIdx = ? and P.status = 'A' and P.userIdx = ?";
+            Object[] registerPostDFParams = new Object[]{
+                    patchEditPostReq.getDeliveryFee(),
+                    postIdx,
+                    userIdx
+            };
+            this.jdbcTemplate.update(registerDeliveryFee, registerPostDFParams);
+        }
+
+        if (patchEditPostReq.getQuantity() != 0){
+            String registerQuantity = "update Post P set P.quantity= ? where P.postIdx = ? and P.status = 'A' and P.userIdx = ?";
+            Object[] registerPostQuantityParams = new Object[]{
+                    patchEditPostReq.getQuantity(),
+                    postIdx,
+                    userIdx
+            };
+            this.jdbcTemplate.update(registerQuantity, registerPostQuantityParams);
+        }
+
+        if (patchEditPostReq.getProdStatus() != null) {
+            String registerProdStatus = "update Post P set P.prodStatus= ? where P.postIdx = ? and P.status = 'A' and P.userIdx = ?";
+            Object[] registerPostPSParams = new Object[]{
+                    patchEditPostReq.getProdStatus(),
+                    postIdx,
+                    userIdx
+            };
+            this.jdbcTemplate.update(registerProdStatus, registerPostPSParams);
+        }
+
+        if (patchEditPostReq.getExchange() != null) {
+            String registerExchange = "update Post P set P.exchange= ? where P.postIdx = ? and P.status = 'A' and P.userIdx = ?";
+            Object[] registerPostExchangeParams = new Object[]{
+                    patchEditPostReq.getExchange(),
+                    postIdx,
+                    userIdx
+            };
+            this.jdbcTemplate.update(registerExchange, registerPostExchangeParams);
+        }
+
+        if (patchEditPostReq.getPostContent() != null) {
+            String registerPostContent = "update Post P set P.postContent= ? where P.postIdx = ? and P.status = 'A' and P.userIdx = ?";
+            Object[] registerPostContentParams = new Object[]{
+                    patchEditPostReq.getPostContent(),
+                    postIdx,
+                    userIdx
+            };
+            this.jdbcTemplate.update(registerPostContent, registerPostContentParams);
+        }
+
+        if (patchEditPostReq.getPayStatus() != null){
+            String registerPayStatus = "update Post P set P.payStatus= ? where P.postIdx = ? and P.status = 'A' and P.userIdx = ?";
+            Object[] registerPostPayParams = new Object[]{
+                    patchEditPostReq.getPayStatus(),
+                    postIdx,
+                    userIdx
+            };
+            this.jdbcTemplate.update(registerPayStatus, registerPostPayParams);
+        }
+
+        return postIdx;
     }
 }
 
