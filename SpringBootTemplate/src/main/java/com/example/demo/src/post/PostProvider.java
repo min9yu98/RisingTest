@@ -30,9 +30,18 @@ public class PostProvider {
         }
     }
 
-    public List<GetPostSearchRes> getQueryPosts(String query) throws BaseException{
+    public GetPostRes getPost(long userIdx, long postIdx) throws BaseException{
         try {
-            List<GetPostSearchRes> getPostsRes = postDao.getQueryPosts(query);
+            GetPostRes getPostRes = postDao.getPost(userIdx, postIdx);
+            return getPostRes;
+        } catch(Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public List<GetPostSearchRes> getQueryPosts(String query, long userIdx) throws BaseException{
+        try {
+            List<GetPostSearchRes> getPostsRes = postDao.getQueryPosts(query, userIdx);
             return getPostsRes;
         } catch(Exception exception){
             throw new BaseException(DATABASE_ERROR);
@@ -48,9 +57,9 @@ public class PostProvider {
         }
     }
 
-    public List<GetPostStorePostRes> getQueryStorePost(long userIdx) throws BaseException{
+    public List<GetPostStorePostRes> getQueryStorePost(long userIdx, long storeUserIdx) throws BaseException{
         try {
-            List<GetPostStorePostRes> getPostStorePostRes = postDao.getQueryStorePost(userIdx);
+            List<GetPostStorePostRes> getPostStorePostRes = postDao.getQueryStorePost(userIdx, storeUserIdx);
             return getPostStorePostRes;
         } catch(Exception exception){
             throw new BaseException(DATABASE_ERROR);
@@ -75,15 +84,6 @@ public class PostProvider {
         }
     }
 
-    public GetPostRes getPost(long userIdx, long postIdx) throws BaseException{
-        try {
-            GetPostRes getPostRes = postDao.getPost(userIdx, postIdx);
-            return getPostRes;
-        } catch(Exception exception){
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
     public List<GetPostImgRes> getImg(long userIdx, long postIdx) throws BaseException{
         try {
             List<GetPostImgRes> getPostImgRes = postDao.getImg(userIdx, postIdx);
@@ -102,9 +102,9 @@ public class PostProvider {
         }
     }
 
-    public List<GetCategoryPostRes> getCategoryPost(int idx) throws BaseException{
+    public List<GetCategoryPostRes> getCategoryPost(long userIdx, int idx) throws BaseException{
         try {
-            List<GetCategoryPostRes> getCategoryPostRes = postDao.getCategoryPost(idx);
+            List<GetCategoryPostRes> getCategoryPostRes = postDao.getCategoryPost(userIdx, idx);
             return getCategoryPostRes;
         } catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class GetPostsRes {
     private long postIdx;
     private String postImg_url; // 게시글의 사진
+    private boolean zzimStatus;
     private int price; // 가격
     private String postTitle; // 게시글 제목
     private String tradeRegion; // 게시자의 지역
