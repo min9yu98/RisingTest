@@ -26,5 +26,6 @@ public class GetPostRes {
     private String exchange;
     private String postContent;
     private String sellingStatus;
+    private boolean zzimStatus;
 }
 // 사진과 해시태그는 따로 api (2 개)

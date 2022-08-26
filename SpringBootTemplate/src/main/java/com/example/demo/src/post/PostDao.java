@@ -25,7 +25,9 @@ public class PostDao {
 
     // 게시글 전체 조회
     public List<GetPostsRes> getPosts(long userIdx) {
-        String getPostsQuery = "select P.postIdx, (select PI.postImg_url LIMIT 1) as postImg_url, P.price, P.postTitle, P.tradeRegion, " +
+        String getPostsQuery = "select P.postIdx, (select PI.postImg_url LIMIT 1) as postImg_url, " +
+                "(select exists(select zzimIdx from Zzim where userIdx=" + userIdx + " and postIdx = P.postIdx)) as zzimStatus," +
+                "P.price, P.postTitle, P.tradeRegion, " +
                 "(select " +
                 "(case when timestampdiff(second, P.createAt, current_timestamp) < 60 " +
                 "then concat(timestampdiff(second, P.createAt, current_timestamp), '초 전') " +
@@ -45,6 +47,7 @@ public class PostDao {
                 (rs, rowNum) -> new GetPostsRes(
                         rs.getLong("postIdx"),
                         rs.getString("postImg_url"),
+                        rs.getBoolean("zzimStatus"),
                         rs.getInt("price"),
                         rs.getString("postTitle"),
                         rs.getString("tradeRegion"),
@@ -55,6 +58,7 @@ public class PostDao {
         );
     }
 
+    // 리뷰 등록
     public long registerReview(PostReviewReq postReviewReq, long postIdx, long userIdx) {
         String registerReviewQuery = "insert into PostReview(postIdx, userIdx, starNum, review) values (?, ?, ?, ?)";
         Object[] registerReviewParams = new Object[]{
@@ -119,8 +123,10 @@ public class PostDao {
     }
 
     // 게시글 검색 결과
-    public List<GetPostSearchRes> getQueryPosts(String query) {
-        String getQueryPostsQuery = "select P.postIdx, (select PI.postImg_url LIMIT 1) as postImg_url, P.price, P.postTitle, " +
+    public List<GetPostSearchRes> getQueryPosts(String query, long userIdx) {
+        String getQueryPostsQuery = "select P.postIdx, (select PI.postImg_url LIMIT 1) as postImg_url, " +
+                "(select exists(select zzimIdx from Zzim where userIdx=" + userIdx + " and postIdx = P.postIdx)) as zzimStatus," +
+                "P.price, P.postTitle, " +
                 "IF(P.payStatus='N', false, true) as payStatus, P.sellingStatus " +
                 "from Post P " +
                 "LEFT OUTER JOIN PostImg PI on P.postIdx = PI.postIdx " +
@@ -134,6 +140,7 @@ public class PostDao {
                 (rs, rowNum) -> new GetPostSearchRes(
                         rs.getLong("postIdx"),
                         rs.getString("postImg_url"),
+                        rs.getBoolean("zzimStatus"),
                         rs.getInt("price"),
                         rs.getString("postTitle"),
                         rs.getBoolean("payStatus"),
@@ -156,8 +163,9 @@ public class PostDao {
     }
 
     // 상점 검색시 조회되는 상점 게시글들
-    public List<GetPostStorePostRes> getQueryStorePost(long userIdx) {
+    public List<GetPostStorePostRes> getQueryStorePost(long userIdx, long storeUserIdx) {
         String getQueryStorePostQuery = "select P.postIdx, (select DISTINCT PI.postImg_url LIMIT 1) as postImg_url, " +
+                "(select exists(select zzimIdx from Zzim where userIdx=" + userIdx + " and postIdx = P.postIdx)) as zzimStatus, " +
                 "P.price, P.postTitle, IF(P.payStatus='N', false, true) as payStatus " +
                 "from Post P " +
                 "LEFT OUTER JOIN PostImg PI on P.postIdx = PI.postIdx " +
@@ -168,10 +176,11 @@ public class PostDao {
                 (rs, rowNum) -> new GetPostStorePostRes(
                         rs.getLong("postIdx"),
                         rs.getString("postImg_url"),
+                        rs.getBoolean("zzimStatus"),
                         rs.getInt("price"),
                         rs.getString("postTitle"),
                         rs.getBoolean("payStatus")
-                ), userIdx);
+                ), storeUserIdx);
     }
 
     // 상점 검색어 목록 (검색어를 검색했을 때 나오는 상품들 X, 상점 부분에서 상점이름들의 목록)
@@ -235,7 +244,8 @@ public class PostDao {
                 "then concat(timestampdiff(hour, P.createAt, current_timestamp), '시간 전') " +
                 "else concat(datediff(current_timestamp, P.createAt), '일 전') " +
                 "end)) as postingTime, P.view as viewNum, COUNT(DISTINCT Z.zzimIdx) as likeNum, " +
-                "COUNT(DISTINCT TR.talkRoomIdx) as chatNum, P.prodStatus, P.quantity, P.deliveryFee, P.exchange, P.postContent, P.sellingStatus " +
+                "COUNT(DISTINCT TR.talkRoomIdx) as chatNum, P.prodStatus, P.quantity, P.deliveryFee, P.exchange, P.postContent, P.sellingStatus, " +
+                "(select exists(select zzimIdx from Zzim where userIdx=" + userIdx + " and postIdx = P.postIdx)) as zzimStatus " +
                 "from Post P " +
                 "LEFT OUTER JOIN Zzim Z on P.postIdx = Z.postIdx " +
                 "LEFT OUTER JOIN TalkRoom TR on P.postIdx = TR.postIdx " +
@@ -256,10 +266,12 @@ public class PostDao {
                         rs.getString("deliveryFee"),
                         rs.getString("exchange"),
                         rs.getString("postContent"),
-                        rs.getString("sellingStatus")
+                        rs.getString("sellingStatus"),
+                        rs.getBoolean("zzimStatus")
                 ));
     }
 
+    // 게시글의 사진들 불러오기
     public List<GetPostImgRes> getImg(long userIdx, long postIdx) {
         String getImgQuery = "select P.postIdx, PI.postImg_url " +
                 "from Post P " +
@@ -272,6 +284,7 @@ public class PostDao {
                 ), postIdx);
     }
 
+    // 게시글의 해시태그 불러오기
     public List<GetPostTagRes> getTag(long userIdx, long postIdx) {
         String getTagQuery = "select P.postIdx, HT.hashTagName " +
                 "from Post P " +
@@ -284,9 +297,10 @@ public class PostDao {
                 ), postIdx);
     }
 
-    public List<GetCategoryPostRes> getCategoryPost(int idx) {
-        String getCategoryPostQuery =
-                "select P.postIdx, (select DISTINCT PI.postImg_url LIMIT 1) as postImg_url, " +
+    // 카테고리에 맞는 게시물들 불러오기
+    public List<GetCategoryPostRes> getCategoryPost(long userIdx, int idx) {
+        String getCategoryPostQuery = "select P.postIdx, (select DISTINCT PI.postImg_url LIMIT 1) as postImg_url, " +
+                "(select exists(select zzimIdx from Zzim where userIdx=" + userIdx + " and postIdx = P.postIdx)) as zzimStatus, " +
                 "P.price, P.postTitle, IF(P.payStatus = 'N', false, true) as payStatus " +
                 "from Post P " +
                 "LEFt OUTER JOIN PostImg PI on P.postIdx = PI.postIdx " +
@@ -296,12 +310,14 @@ public class PostDao {
                 (rs, rowNum) -> new GetCategoryPostRes(
                         rs.getLong("postIdx"),
                         rs.getString("postImg_url"),
+                        rs.getBoolean("zzimStatus"),
                         rs.getInt("price"),
                         rs.getString("postTitle"),
                         rs.getBoolean("payStatus")
                 ), idx);
     }
 
+    // 게시글 삭제
     public int deletePost(PatchDeletePostReq patchDeletePostReq) {
         String deletePostQuery = "update Post P " +
                 "LEFT OUTER JOIN HashTag HT on P.postIdx = HT.postIdx " +
@@ -316,6 +332,7 @@ public class PostDao {
         return this.jdbcTemplate.update(deletePostQuery, deletePostParams);
     }
 
+    // 게시글 편집
     public long editPost(PatchEditPostReq patchEditPostReq, long userIdx, long postIdx) {
         // 게시글 사진 수정
         List<String> postImg = patchEditPostReq.getPostImg_url();

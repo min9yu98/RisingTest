@@ -84,11 +84,28 @@ public class PostController {
         }
     }
 
-    // 상품 검색시 상품들 /search-prod?query=query
-    @GetMapping("/search-prod")
-    public BaseResponse<List<GetPostSearchRes>> getQueryPosts(@RequestParam(name="query") String query){
+    // 카테고리 클릭시 나오는 게시글들 조회
+    @ResponseBody
+    @GetMapping("/{userIdx}/categories/{mainCategory}/{idx}")
+    public BaseResponse<List<GetCategoryPostRes>> getCategoryPost(@PathVariable("userIdx") long userIdx, @PathVariable("mainCategory") String mainCategory, @PathVariable("idx") int idx){
         try {
-            List<GetPostSearchRes> getPostsRes = postProvider.getQueryPosts(query);
+            if (mainCategory.equals("중고거래") || mainCategory.equals("\"중고거래\"")){
+                idx += 12;
+            } else if (mainCategory.equals("생활") || mainCategory.equals("\"생활\"")){
+                idx  += 33;
+            }
+            List<GetCategoryPostRes> getCategoryPostRes = postProvider.getCategoryPost(userIdx, idx);
+            return new BaseResponse<>(getCategoryPostRes);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    // 상품 검색시 상품들 /search-prod?query=query
+    @GetMapping("/{userIdx}/search-prod")
+    public BaseResponse<List<GetPostSearchRes>> getQueryPosts(@RequestParam(name="query") String query, @PathVariable("userIdx") long userIdx){
+        try {
+            List<GetPostSearchRes> getPostsRes = postProvider.getQueryPosts(query, userIdx);
             return new BaseResponse<>(getPostsRes);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
@@ -97,7 +114,7 @@ public class PostController {
 
     // 상점정보
     @ResponseBody
-    @GetMapping("/search-store/{userIdx}")
+    @GetMapping("/{userIdx}/search-store")
     public BaseResponse<GetPostStoreRes> getQueryStore(@PathVariable("userIdx") long userIdx){
         try{
             GetPostStoreRes getPostStoreRes = postProvider.getQueryStore(userIdx);
@@ -109,10 +126,10 @@ public class PostController {
 
     // 상점의 게시글들
     @ResponseBody
-    @GetMapping("/search-store/{userIdx}/posts")
-    public BaseResponse<List<GetPostStorePostRes>> getQueryStorePost(@PathVariable("userIdx") long userIdx){
+    @GetMapping("/{userIdx}/search-store/{storeUserIdx}/posts")
+    public BaseResponse<List<GetPostStorePostRes>> getQueryStorePost(@PathVariable("userIdx") long userIdx, @PathVariable("storeUserIdx") long storeUserIdx){
         try{
-            List<GetPostStorePostRes> getPostStorePostRes = postProvider.getQueryStorePost(userIdx);
+            List<GetPostStorePostRes> getPostStorePostRes = postProvider.getQueryStorePost(userIdx, storeUserIdx);
             return new BaseResponse<>(getPostStorePostRes);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
@@ -141,26 +158,11 @@ public class PostController {
         }
     }
 
+    // 리뷰 작성
     @ResponseBody
-    @GetMapping("/categories/{mainCategory}/{idx}")
-    public BaseResponse<List<GetCategoryPostRes>> getCategoryPost(@PathVariable("mainCategory") String mainCategory, @PathVariable("idx") int idx){
-        try {
-            if (mainCategory.equals("중고거래") || mainCategory.equals("\"중고거래\"")){
-                idx += 12;
-            } else if (mainCategory.equals("생활") || mainCategory.equals("\"생활\"")){
-                idx  += 33;
-            }
-            List<GetCategoryPostRes> getCategoryPostRes = postProvider.getCategoryPost(idx);
-            return new BaseResponse<>(getCategoryPostRes);
-        } catch(BaseException exception){
-            return new BaseResponse<>((exception.getStatus()));
-        }
-    }
-
-    @ResponseBody
-    @PostMapping("/reviews/{reviewerIdx}/write/{postIdx}")
+    @PostMapping("/{userIdx}/reviews/{postIdx}")
     public BaseResponse<PostReviewRes> registerReview(@RequestBody PostReviewReq postReviewReq,
-                                                      @PathVariable("reviewerIdx") long userIdx,
+                                                      @PathVariable("userIdx") long userIdx,
                                                       @PathVariable("postIdx") long postIdx){
         if (postReviewReq.getStarNum() == 0) return new BaseResponse<>(POST_REVIEW_INVALID_STAR_NUM);
         if (postReviewReq.getReview() == null) return new BaseResponse<>(POST_REVIEW_EMPTY);

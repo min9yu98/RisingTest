@@ -55,6 +55,8 @@ public enum BaseResponseStatus {
     // [POST] /users
     DUPLICATED_EMAIL(false, 3013, "중복된 이메일입니다."),
     FAILED_TO_LOGIN(false,3014,"없는 아이디거나 비밀번호가 틀렸습니다."),
+    PATCH_EMPTY_BAN(false, 3015, "차단 목록에 존재하지 않는 상점입니다."),
+
 
 
 
@@ -67,7 +69,9 @@ public enum BaseResponseStatus {
     //[PATCH] /users/{userIdx}
     MODIFY_FAIL_USERNAME(false,4014,"유저네임 수정 실패"),
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
-    PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다.");
+    PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다."),
+    POST_BAN_SECESSION_USER(false, 4013, "존재하지 않는 상점입니다.");
+
 
 
     // 5000 : 필요시 만들어서 쓰세요

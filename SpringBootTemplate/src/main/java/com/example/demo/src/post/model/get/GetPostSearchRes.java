@@ -12,6 +12,7 @@ import lombok.Setter;
 public class GetPostSearchRes {
     private long postIdx;
     private String postImg_url;
+    private boolean zzimStatus;
     private int price;
     private String postTitle;
     private boolean payStatus;
