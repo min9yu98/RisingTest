@@ -3,11 +3,15 @@ package com.example.demo.src.myPage;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
+import com.example.demo.src.inquiry.model.GetMyInquiryRes;
 import com.example.demo.src.myPage.model.MyPage;
+import com.example.demo.src.myPage.model.MyPageFollowing;
 import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.DATABASE_ERROR;
 
@@ -36,7 +40,21 @@ public class MyPageProvider {
             myPage.setProfileImg_url(myPageNameImg.getProfileImg_url());
             myPage.setPostMyPages(myPageDao.getMyPostPages(userIdx, sellingStatus));
             return myPage;
+        } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지를 보냅니다.
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
+    @Transactional
+    public List<MyPageFollowing> getMyPageFollowing(int userIdx) throws BaseException {
+        try {
+            List<MyPageFollowing> myPageFollowing = myPageDao.getMyPageFollowerNameImg(userIdx);
+            for (MyPageFollowing pageFollowing : myPageFollowing) {
+                pageFollowing.setFollowerNum(myPageDao.getMyPageFollowerNum(pageFollowing.getPostUserIdx()));
+                pageFollowing.setPostNum(myPageDao.getMyPagePostNum(pageFollowing.getPostUserIdx()));
+                pageFollowing.setPostFollows(myPageDao.getMyPagePosts(pageFollowing.getPostUserIdx()));
+            }
+            return myPageFollowing;
         } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지를 보냅니다.
             throw new BaseException(DATABASE_ERROR);
         }

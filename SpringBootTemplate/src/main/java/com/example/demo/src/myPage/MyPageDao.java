@@ -3,6 +3,8 @@ package com.example.demo.src.myPage;
 
 import com.example.demo.src.inquiry.model.GetMyInquiryRes;
 import com.example.demo.src.myPage.model.MyPage;
+import com.example.demo.src.myPage.model.MyPageFollowing;
+import com.example.demo.src.myPage.model.PostFollow;
 import com.example.demo.src.myPage.model.PostMyPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -96,6 +98,47 @@ public class MyPageDao {
                         rs.getString("postUserName")
                 ), // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
                 getInquiryParam,sellingStatus
+        ); // 한 개의 회원정보를 얻기 위한 jdbcTemplate 함수(Query, 객체 매핑 정보, Params)의 결과 반환
+    }
+
+    public List<MyPageFollowing> getMyPageFollowerNameImg(int userIdx) {
+        String getInquiryQuery = "select U.userName as postUserName, U.userIdx as postUseridx, U.profileImg_url as profileImg_url from Follow F, User U " +
+                "WHERE followerUserIdx = ? and U.userIdx = F.followeeUserIdx;"; // 해당 email을 만족하는 User의 정보들을 조회한다.
+        int getInquiryParam = userIdx;
+
+        return this.jdbcTemplate.query(getInquiryQuery,
+                (rs, rowNum) -> new MyPageFollowing(
+                        rs.getInt("postUserIdx"),
+                        rs.getString("postUserName"),
+                        rs.getString("profileImg_url")
+                ), // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
+                getInquiryParam
+        ); // 한 개의 회원정보를 얻기 위한 jdbcTemplate 함수(Query, 객체 매핑 정보, Params)의 결과 반환
+    }
+    public int getMyPagePostNum(int userIdx) {
+        String getInquiryQuery = "select COUNT(*) as postNum From Post WHERE userIdx = ?";
+        int getInquiryParam = userIdx;
+
+        return this.jdbcTemplate.queryForObject(getInquiryQuery,
+                (rs, rowNum) ->
+                        rs.getInt("postNum"),
+                getInquiryParam
+        );
+    }
+
+
+    public List<PostFollow> getMyPagePosts(int userIdx) {
+        String getInquiryQuery = "select P.postIdx, PI.postImg_url, P.price from Post P , PostImg PI " +
+                "WHERE userIdx = ?  Group By P.postIdx;"; // 해당 email을 만족하는 User의 정보들을 조회한다.
+        int getInquiryParam = userIdx;
+
+        return this.jdbcTemplate.query(getInquiryQuery,
+                (rs, rowNum) -> new PostFollow(
+                        rs.getInt("postIdx"),
+                        rs.getString("postImg_url"),
+                        rs.getInt("price")
+                ), // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
+                getInquiryParam
         ); // 한 개의 회원정보를 얻기 위한 jdbcTemplate 함수(Query, 객체 매핑 정보, Params)의 결과 반환
     }
 }
