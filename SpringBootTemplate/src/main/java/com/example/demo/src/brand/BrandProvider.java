@@ -21,10 +21,29 @@ public class BrandProvider {
         this.brandDao = brandDao;
     }
 
-    public List<GetBrandRes> getBrandKor() throws BaseException {
+    public List<GetBrandRes> getBrand(String lang) throws BaseException {
+        boolean flag = false;
         try{
-            List<GetBrandRes> getBrandRes = brandDao.getBrandKor();
-            return getBrandRes;
+            if (lang.equals("kor") || lang.equals("\"kor\"")){
+                flag = true;
+            } else if (lang.equals("eng") || lang.equals("\"eng\"")){
+                flag = false;
+            }
+            return brandDao.getBrand(flag);
+        } catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public List<GetBrandRes> getMyBrand(String lang, long userIdx) throws BaseException {
+        boolean flag = false;
+        try{
+            if (lang.equals("kor") || lang.equals("\"kor\"")){
+                flag = true;
+            } else if (lang.equals("eng") || lang.equals("\"eng\"")){
+                flag = false;
+            }
+            return brandDao.getMyBrand(flag, userIdx);
         } catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }

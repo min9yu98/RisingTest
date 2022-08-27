@@ -102,10 +102,21 @@ public class BrandController {
 
     // 가나다순
     @ResponseBody
-    @GetMapping("/order-kor")
-    public BaseResponse<List<GetBrandRes>> getBrandKor(){
+    @GetMapping("/order/{lang}")
+    public BaseResponse<List<GetBrandRes>> getBrand(@PathVariable("lang") String lang){
         try{
-            List<GetBrandRes> getBrandRes = brandProvider.getBrandKor();
+            List<GetBrandRes> getBrandRes = brandProvider.getBrand(lang);
+            return new BaseResponse<>(getBrandRes);
+        } catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @GetMapping("/order/{lang}/{userIdx}")
+    public BaseResponse<List<GetBrandRes>> getMyBrand(@PathVariable("lang") String lang, @PathVariable("userIdx") long userIdx){
+        try{
+            List<GetBrandRes> getBrandRes = brandProvider.getMyBrand(lang, userIdx);
             return new BaseResponse<>(getBrandRes);
         } catch (BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
