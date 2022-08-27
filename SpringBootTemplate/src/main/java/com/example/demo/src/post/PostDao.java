@@ -193,7 +193,7 @@ public class PostDao {
                 "LEFT OUTER JOIN Post P on U.userIdx = P.userIdx " +
                 "LEFT OUTER JOIN Follow F on U.userIdx = F.followerUserIdx " +
                 "where (LOCATE(" + query + ", U.storeName) > 0) and U.status = 'A' " +
-                "group by P.userIdx, F.followIdx";
+                "group by P.userIdx, F.followIdx LIMIT 20";
         return this.jdbcTemplate.query(getQueryStoreQuery,
                 (rs, rowNum) -> new GetPostStoreSearchQueryRes(
                         rs.getString("profileImg_url"),
@@ -218,7 +218,7 @@ public class PostDao {
                 "select DISTINCT SUBSTRING_INDEX(HT.hashTagName, ' ', LOCATE("+ query +", HT.hashTagName)) as searchWord " +
                 "from HashTag HT " +
                 "LEFT OUTER JOIN Post P on HT.postIdx = P.postIdx " +
-                "where HT.status='A' and P.status = 'A' and (LOCATE("+ query +", HT.hashTagName) > 0)";
+                "where HT.status='A' and P.status = 'A' and (LOCATE("+ query +", HT.hashTagName) > 0) LIMIT 20";
         return this.jdbcTemplate.query(getQueryPostQuery,
                 (rs, rowNum) -> new GetPostSearchQueryRes(
                         rs.getString("searchWord")
