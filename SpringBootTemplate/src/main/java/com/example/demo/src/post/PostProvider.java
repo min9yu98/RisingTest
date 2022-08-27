@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.DATABASE_ERROR;
@@ -21,10 +23,50 @@ public class PostProvider {
         this.postDao = postDao;
     }
 
-    public List<GetPostsRes> getPosts(long userIdx) throws BaseException {
+    public boolean checkPage(long pageNum, long total){
+        if (total >= pageNum){
+            return true;
+        }
+        return false;
+    }
+
+//    public List<Object> printResult(Object object, long size, long page, long pageNum){
+//        List<Object> arr = new ArrayList<>();
+//
+//        if (checkPage(pageNum, page)) {
+//            if (page == pageNum) {
+//                for (long i = (pageNum - 1) % 20; i < 20 * (pageNum - 1) + (size % 20); i++) {
+//                    arr.add(object.get((int) i));
+//                }
+//            } else {
+//                for (long i = (pageNum - 1) * 20; i < 20 * pageNum - 1; i++) {
+//                    arr.add(object.get((int) i));
+//                }
+//            }
+//        }
+//        return arr;
+//    }
+
+    public List<GetPostsRes> getPosts(long userIdx, long pageNum) throws BaseException {
         try {
-            List<GetPostsRes> getPostRes = postDao.getPosts(userIdx);
-            return getPostRes;
+            List<GetPostsRes> getPostsRes = postDao.getPosts(userIdx);
+            long size = getPostsRes.size();
+            long page = size / 20;
+            page += (size % 20 != 0) ? 1 : 0;
+            List<GetPostsRes> arrGetPostsRes = new ArrayList<>();
+            if (checkPage(pageNum, page)){
+
+                if (page == pageNum){
+                    for (long i = (pageNum - 1) * 20; i < 20 * (pageNum - 1) + (size % 20); i++){
+                        arrGetPostsRes.add(getPostsRes.get((int)i));
+                    }
+                } else {
+                    for (long i = (pageNum - 1) * 20; i < 20 * pageNum - 1; i++){
+                        arrGetPostsRes.add(getPostsRes.get((int)i));
+                    }
+                }
+            }
+            return arrGetPostsRes;
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
@@ -38,11 +80,26 @@ public class PostProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-
-    public List<GetPostSearchRes> getQueryPosts(String query, long userIdx) throws BaseException{
+    public List<GetPostSearchRes> getQueryPosts(String query, long userIdx, long pageNum) throws BaseException{
         try {
             List<GetPostSearchRes> getPostsRes = postDao.getQueryPosts(query, userIdx);
-            return getPostsRes;
+            long size = getPostsRes.size();
+            long page = size / 20;
+            page += (size % 20 != 0) ? 1 : 0;
+            List<GetPostSearchRes> arrGetPostSearchRes = new ArrayList<>();
+
+            if (checkPage(pageNum, page)) {
+                if (page == pageNum) {
+                    for (long i = (pageNum - 1) % 20; i < 20 * (pageNum - 1) + (size % 20); i++) {
+                        arrGetPostSearchRes.add(getPostsRes.get((int) i));
+                    }
+                } else {
+                    for (long i = (pageNum - 1) * 20; i < 20 * pageNum - 1; i++) {
+                        arrGetPostSearchRes.add(getPostsRes.get((int) i));
+                    }
+                }
+            }
+            return arrGetPostSearchRes;
         } catch(Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
@@ -57,10 +114,28 @@ public class PostProvider {
         }
     }
 
-    public List<GetPostStorePostRes> getQueryStorePost(long userIdx, long storeUserIdx) throws BaseException{
+    public List<GetPostStorePostRes> getQueryStorePost(long userIdx, long storeUserIdx, long pageNum) throws BaseException{
         try {
             List<GetPostStorePostRes> getPostStorePostRes = postDao.getQueryStorePost(userIdx, storeUserIdx);
-            return getPostStorePostRes;
+
+            long size = getPostStorePostRes.size();
+            long page = size / 20;
+            page += (size % 20 != 0) ? 1 : 0;
+            List<GetPostStorePostRes> arrStorePostRes = new ArrayList<>();
+
+            if (checkPage(pageNum, page)){
+
+                if (page == pageNum){
+                    for (long i = (pageNum - 1) * 20; i < 20 * (pageNum - 1) + (size % 20); i++){
+                        arrStorePostRes.add(getPostStorePostRes.get((int)i));
+                    }
+                } else {
+                    for (long i = (pageNum - 1) * 20; i < 20 * pageNum - 1; i++){
+                        arrStorePostRes.add(getPostStorePostRes.get((int)i));
+                    }
+                }
+            }
+            return arrStorePostRes;
         } catch(Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }
@@ -102,10 +177,28 @@ public class PostProvider {
         }
     }
 
-    public List<GetCategoryPostRes> getCategoryPost(long userIdx, int idx) throws BaseException{
+    public List<GetCategoryPostRes> getCategoryPost(long userIdx, int idx, long pageNum) throws BaseException{
         try {
             List<GetCategoryPostRes> getCategoryPostRes = postDao.getCategoryPost(userIdx, idx);
-            return getCategoryPostRes;
+
+            long size = getCategoryPostRes.size();
+            long page = size / 20;
+            page += (size % 20 != 0) ? 1 : 0;
+            List<GetCategoryPostRes> arrCategoryPostRes = new ArrayList<>();
+
+            if (checkPage(pageNum, page)){
+
+                if (page == pageNum){
+                    for (long i = (pageNum - 1) * 20; i < 20 * (pageNum - 1) + (size % 20); i++){
+                        arrCategoryPostRes.add(getCategoryPostRes.get((int)i));
+                    }
+                } else {
+                    for (long i = (pageNum - 1) * 20; i < 20 * pageNum - 1; i++){
+                        arrCategoryPostRes.add(getCategoryPostRes.get((int)i));
+                    }
+                }
+            }
+            return arrCategoryPostRes;
         } catch (Exception exception){
             throw new BaseException(DATABASE_ERROR);
         }

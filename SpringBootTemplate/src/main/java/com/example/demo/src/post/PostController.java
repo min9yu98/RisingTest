@@ -38,10 +38,10 @@ public class PostController {
 
     // 게시글 전체 조회
     @ResponseBody
-    @GetMapping("/{userIdx}/posts") // 로그인 때문에
-    public BaseResponse<List<GetPostsRes>> getPosts(@PathVariable("userIdx") long userIdx) {
+    @GetMapping("/{userIdx}/posts/{pageNum}") // 로그인 때문에
+    public BaseResponse<List<GetPostsRes>> getPosts(@PathVariable("userIdx") long userIdx, @PathVariable("pageNum") long pageNum) {
         try {
-            List<GetPostsRes> getPostingsRes = postProvider.getPosts(userIdx);
+            List<GetPostsRes> getPostingsRes = postProvider.getPosts(userIdx, pageNum);
             return new BaseResponse<>(getPostingsRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
@@ -86,15 +86,18 @@ public class PostController {
 
     // 카테고리 클릭시 나오는 게시글들 조회
     @ResponseBody
-    @GetMapping("/{userIdx}/categories/{mainCategory}/{idx}")
-    public BaseResponse<List<GetCategoryPostRes>> getCategoryPost(@PathVariable("userIdx") long userIdx, @PathVariable("mainCategory") String mainCategory, @PathVariable("idx") int idx){
+    @GetMapping("/{userIdx}/categories/{mainCategory}/{idx}/{pageNum}")
+    public BaseResponse<List<GetCategoryPostRes>> getCategoryPost(@PathVariable("userIdx") long userIdx,
+                                                                  @PathVariable("mainCategory") String mainCategory,
+                                                                  @PathVariable("idx") int idx,
+                                                                  @PathVariable("pageNum") long pageNum){
         try {
             if (mainCategory.equals("중고거래") || mainCategory.equals("\"중고거래\"")){
                 idx += 12;
             } else if (mainCategory.equals("생활") || mainCategory.equals("\"생활\"")){
                 idx  += 33;
             }
-            List<GetCategoryPostRes> getCategoryPostRes = postProvider.getCategoryPost(userIdx, idx);
+            List<GetCategoryPostRes> getCategoryPostRes = postProvider.getCategoryPost(userIdx, idx, pageNum);
             return new BaseResponse<>(getCategoryPostRes);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
@@ -102,10 +105,12 @@ public class PostController {
     }
 
     // 상품 검색시 상품들 /search-prod?query=query
-    @GetMapping("/{userIdx}/search-prod")
-    public BaseResponse<List<GetPostSearchRes>> getQueryPosts(@RequestParam(name="query") String query, @PathVariable("userIdx") long userIdx){
+    @GetMapping("/{userIdx}/search-prod/{pageNum}")
+    public BaseResponse<List<GetPostSearchRes>> getQueryPosts(@RequestParam(name="query") String query,
+                                                              @PathVariable("userIdx") long userIdx,
+                                                              @PathVariable("pageNum") long pageNum){
         try {
-            List<GetPostSearchRes> getPostsRes = postProvider.getQueryPosts(query, userIdx);
+            List<GetPostSearchRes> getPostsRes = postProvider.getQueryPosts(query, userIdx, pageNum);
             return new BaseResponse<>(getPostsRes);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
@@ -126,10 +131,12 @@ public class PostController {
 
     // 상점의 게시글들
     @ResponseBody
-    @GetMapping("/{userIdx}/search-store/{storeUserIdx}/posts")
-    public BaseResponse<List<GetPostStorePostRes>> getQueryStorePost(@PathVariable("userIdx") long userIdx, @PathVariable("storeUserIdx") long storeUserIdx){
+    @GetMapping("/{userIdx}/search-store/{storeUserIdx}/posts/{pageNum}")
+    public BaseResponse<List<GetPostStorePostRes>> getQueryStorePost(@PathVariable("userIdx") long userIdx,
+                                                                     @PathVariable("storeUserIdx") long storeUserIdx,
+                                                                     @PathVariable("pageNum") long pageNum){
         try{
-            List<GetPostStorePostRes> getPostStorePostRes = postProvider.getQueryStorePost(userIdx, storeUserIdx);
+            List<GetPostStorePostRes> getPostStorePostRes = postProvider.getQueryStorePost(userIdx, storeUserIdx, pageNum);
             return new BaseResponse<>(getPostStorePostRes);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
