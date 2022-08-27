@@ -104,7 +104,7 @@ public class PostController {
         }
     }
 
-    // 상품 검색시 상품들 /search-prod?query=query
+//     상품 검색시 상품들 /search-prod?query=query
     @GetMapping("/{userIdx}/search-prod/{pageNum}")
     public BaseResponse<List<GetPostSearchRes>> getQueryPosts(@RequestParam(name="query") String query,
                                                               @PathVariable("userIdx") long userIdx,
