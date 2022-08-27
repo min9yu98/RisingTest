@@ -35,9 +35,22 @@ public class BrandDao {
         return brandIdx;
     }
 
-    public List<GetBrandRes> getBrandKor() {
-        String getBrandKorQuery = "select B.brandIdx, B.brandImg_url, B.brandName, B.brandEngName, (select postIdx from Post) from Brand B ";
-        return this.jdbcTemplate.query(getBrandKorQuery,
+    public List<GetBrandRes> getBrand(boolean check) {
+        String getBrandQuery = "";
+        if (check){
+            getBrandQuery = "select B.brandIdx, B.brandImg_url, B.brandName, B.brandEngName, " +
+                    "(select COUNT(distinct P.postIdx) " +
+                    "from Post P LEFT OUTER JOIN HashTag HT on P.postIdx = HT.postIdx " +
+                    "where LOCATE((select B.brandName), HT.hashTagName) > 0) as postNum " +
+                    "from Brand B order by binary(B.brandName)";
+        } else{
+            getBrandQuery = "select B.brandIdx, B.brandImg_url, B.brandName, B.brandEngName, " +
+                    "(select COUNT(distinct P.postIdx) " +
+                    "from Post P LEFT OUTER JOIN HashTag HT on P.postIdx = HT.postIdx " +
+                    "where LOCATE((select B.brandName), HT.hashTagName) > 0) as postNum " +
+                    "from Brand B order by binary(B.brandEngName)";
+        }
+        return this.jdbcTemplate.query(getBrandQuery,
                 (rs, rowNum) -> new GetBrandRes(
                         rs.getLong("brandIdx"),
                         rs.getString("brandImg_url"),
@@ -45,6 +58,37 @@ public class BrandDao {
                         rs.getString("brandEngName"),
                         rs.getLong("postNum")
                 ));
+    }
+
+    public List<GetBrandRes> getMyBrand(boolean check, long userIdx) {
+        String getBrandQuery = "";
+        if (check){
+            getBrandQuery = "select B.brandIdx, B.brandImg_url, B.brandName, B.brandEngName, " +
+                    "(select COUNT(distinct P.postIdx) " +
+                    "from Post P LEFT OUTER JOIN HashTag HT on P.postIdx = HT.postIdx " +
+                    "where LOCATE((select B.brandName), HT.hashTagName) > 0) as postNum " +
+                    "from Brand B " +
+                    "LEFT JOIN BrandFollow BF on B.brandIdx = BF.brandIdx " +
+                    "where BF.userIdx = ? " +
+                    "order by binary(B.brandName)";
+        } else{
+            getBrandQuery = "select B.brandIdx, B.brandImg_url, B.brandName, B.brandEngName, " +
+                    "(select COUNT(distinct P.postIdx) " +
+                    "from Post P LEFT OUTER JOIN HashTag HT on P.postIdx = HT.postIdx " +
+                    "where LOCATE((select B.brandName), HT.hashTagName) > 0) as postNum " +
+                    "from Brand B " +
+                    "LEFT JOIN BrandFollow BF on B.brandIdx = BF.brandIdx " +
+                    "where BF.userIdx = ? " +
+                    "order by binary(B.brandEngName)";
+        }
+        return this.jdbcTemplate.query(getBrandQuery,
+                (rs, rowNum) -> new GetBrandRes(
+                        rs.getLong("brandIdx"),
+                        rs.getString("brandImg_url"),
+                        rs.getString("brandName"),
+                        rs.getString("brandEngName"),
+                        rs.getLong("postNum")
+                ), userIdx);
     }
 
     public int deleteBrand(PatchDeleteBrandReq patchDeleteBrandReq) {
