@@ -21,7 +21,7 @@ public class TradeController {
     }
 
     @ResponseBody
-    @GetMapping("/{userIdx}/{postIdx}")
+    @PostMapping("/{userIdx}/{postIdx}")
     public BaseResponse<PostTradeRes> trade(@PathVariable("userIdx") long userIdx, @PathVariable("postIdx") long postIdx){
         try {
             PostTradeRes postTradeRes = tradeService.trade(userIdx, postIdx);
