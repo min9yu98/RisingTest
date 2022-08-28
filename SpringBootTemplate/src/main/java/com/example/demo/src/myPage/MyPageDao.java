@@ -2,10 +2,7 @@ package com.example.demo.src.myPage;
 
 
 import com.example.demo.src.inquiry.model.GetMyInquiryRes;
-import com.example.demo.src.myPage.model.MyPage;
-import com.example.demo.src.myPage.model.MyPageFollowing;
-import com.example.demo.src.myPage.model.PostFollow;
-import com.example.demo.src.myPage.model.PostMyPage;
+import com.example.demo.src.myPage.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -71,7 +68,7 @@ public class MyPageDao {
     }
 
     public MyPage getMyPageNameImg(int userIdx) {
-        String getInquiryQuery = "select userName, profileImg_url FROM User WHERE userIdx = ?;"; // 해당 email을 만족하는 User의 정보들을 조회한다.
+        String getInquiryQuery = "select userName, profileImg_url FROM User WHERE userIdx = ?;";
         int getInquiryParam = userIdx; // 주입될 email값을 클라이언트의 요청에서 주어진 정보를 통해 가져온다.
 
         return this.jdbcTemplate.queryForObject(getInquiryQuery,
@@ -137,6 +134,41 @@ public class MyPageDao {
                         rs.getInt("postIdx"),
                         rs.getString("postImg_url"),
                         rs.getInt("price")
+                ), // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
+                getInquiryParam
+        ); // 한 개의 회원정보를 얻기 위한 jdbcTemplate 함수(Query, 객체 매핑 정보, Params)의 결과 반환
+    }
+
+
+
+    public List<MyPageFollowing> getMyPageFolloweeNameImg(int userIdx) {
+        String getInquiryQuery = "select U.userName as postUserName, U.userIdx as postUseridx, U.profileImg_url as profileImg_url from Follow F, User U " +
+                "WHERE followeeUserIdx = ? and U.userIdx = F.followerUserIdx;"; // 해당 email을 만족하는 User의 정보들을 조회한다.
+        int getInquiryParam = userIdx;
+
+        return this.jdbcTemplate.query(getInquiryQuery,
+                (rs, rowNum) -> new MyPageFollowing(
+                        rs.getInt("postUserIdx"),
+                        rs.getString("postUserName"),
+                        rs.getString("profileImg_url")
+                ), // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
+                getInquiryParam
+        ); // 한 개의 회원정보를 얻기 위한 jdbcTemplate 함수(Query, 객체 매핑 정보, Params)의 결과 반환
+    }
+
+    public List<MyPageZzim> getMyPageZzim(int userIdx) {
+        String getInquiryQuery = "select P.postIdx as postIdx, PI.postImg_url as postImg_url, P.price as price , U.userName as userName ," +
+                " (select(case when timestampdiff(second, P.createAt, current_timestamp) < 60 then concat(timestampdiff(second, P.createAt, current_timestamp), '초 전')when timestampdiff(minute, P.createAt, current_timestamp) < 60 then concat(timestampdiff(minute, P.createAt, current_timestamp), '분 전')when timestampdiff(hour, P.createAt, current_timestamp) < 24 then concat(timestampdiff(hour, P.createAt, current_timestamp), '시간 전')else concat(datediff(current_timestamp, P.createAt), '일 전')end)) as createdAt " +
+                "from Post P , PostImg PI, Zzim Z, User U WHERE Z.userIdx = ? and Z.postIdx = P.postIdx  Group By P.postIdx;"; // 해당 email을 만족하는 User의 정보들을 조회한다.
+        int getInquiryParam = userIdx;
+
+        return this.jdbcTemplate.query(getInquiryQuery,
+                (rs, rowNum) -> new MyPageZzim(
+                        rs.getInt("postIdx"),
+                        rs.getString("postImg_url"),
+                        rs.getInt("price"),
+                        rs.getString("userName"),
+                        rs.getString("createdAt")
                 ), // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
                 getInquiryParam
         ); // 한 개의 회원정보를 얻기 위한 jdbcTemplate 함수(Query, 객체 매핑 정보, Params)의 결과 반환

@@ -6,6 +6,7 @@ import com.example.demo.config.BaseResponse;
 import com.example.demo.src.inquiry.model.GetMyInquiryRes;
 import com.example.demo.src.myPage.model.MyPage;
 import com.example.demo.src.myPage.model.MyPageFollowing;
+import com.example.demo.src.myPage.model.MyPageZzim;
 import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,32 @@ public class MyPageProvider {
                 pageFollowing.setPostFollows(myPageDao.getMyPagePosts(pageFollowing.getPostUserIdx()));
             }
             return myPageFollowing;
+        } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지를 보냅니다.
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+    @Transactional
+    public List<MyPageFollowing> getMyPageFollower(int userIdx) throws BaseException {
+        try {
+            List<MyPageFollowing> myPageFollowing = myPageDao.getMyPageFolloweeNameImg(userIdx);
+            for (MyPageFollowing pageFollowing : myPageFollowing) {
+                pageFollowing.setFollowerNum(myPageDao.getMyPageFollowerNum(pageFollowing.getPostUserIdx()));
+                pageFollowing.setPostNum(myPageDao.getMyPagePostNum(pageFollowing.getPostUserIdx()));
+                pageFollowing.setPostFollows(myPageDao.getMyPagePosts(pageFollowing.getPostUserIdx()));
+            }
+            return myPageFollowing;
+        } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지를 보냅니다.
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    @Transactional
+    public List<MyPageZzim> getMyPageZzim(int userIdx) throws BaseException {
+        try {
+            List<MyPageZzim> myPageZzim = myPageDao.getMyPageZzim(userIdx);
+            return myPageZzim;
         } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지를 보냅니다.
             throw new BaseException(DATABASE_ERROR);
         }

@@ -5,6 +5,7 @@ import com.example.demo.config.BaseResponse;
 import com.example.demo.src.inquiry.model.GetMyInquiryRes;
 import com.example.demo.src.myPage.model.MyPage;
 import com.example.demo.src.myPage.model.MyPageFollowing;
+import com.example.demo.src.myPage.model.MyPageZzim;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +55,7 @@ public class MyPageController {
 
 
     @ResponseBody
-    @GetMapping("/follower/{userIdx}")
+    @GetMapping("/following/{userIdx}")
     public BaseResponse<List<MyPageFollowing>> getMyPageFollowing(@PathVariable("userIdx") int userIdx)
     {
         try {
@@ -70,4 +71,42 @@ public class MyPageController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    @ResponseBody
+    @GetMapping("/follower/{userIdx}")
+    public BaseResponse<List<MyPageFollowing>> getMyPageFollower(@PathVariable("userIdx") int userIdx)
+    {
+        try {
+//            //jwt에서 idx 추출.
+//            int userIdxByJwt = jwtService.getUserIdx();
+//            //userIdx와 접근한 유저가 같은지 확인
+//            if(userIdx != userIdxByJwt){
+//                return new BaseResponse<>(INVALID_USER_JWT);
+//            }
+            List<MyPageFollowing> getMyPageFollowing = myPageProvider.getMyPageFollower(userIdx);
+            return new BaseResponse<>(getMyPageFollowing);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    @ResponseBody
+    @GetMapping("/zzim/{userIdx}")
+    public BaseResponse<List<MyPageZzim>> getMyPageZzim(@PathVariable("userIdx") int userIdx)
+    {
+        try {
+//            //jwt에서 idx 추출.
+//            int userIdxByJwt = jwtService.getUserIdx();
+//            //userIdx와 접근한 유저가 같은지 확인
+//            if(userIdx != userIdxByJwt){
+//                return new BaseResponse<>(INVALID_USER_JWT);
+//            }
+            List<MyPageZzim> getMyPageZzim = myPageProvider.getMyPageZzim(userIdx);
+            return new BaseResponse<>(getMyPageZzim);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
 }
