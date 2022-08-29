@@ -99,6 +99,19 @@ public class BrandController {
         }
     }
 
+    @ResponseBody
+    @GetMapping("/{brandIdx}/{userIdx}/posts/{pageNum}")
+    public BaseResponse<List<GetBrandPostRes>> getBrandPost(@PathVariable("brandIdx") long brandIdx,
+                                                      @PathVariable("userIdx") long userIdx,
+                                                      @PathVariable("pageNum") long pageNum){
+        try {
+            List<GetBrandPostRes>getBrandPostRes = brandProvider.getBrandPost(brandIdx, userIdx, pageNum);
+            return new BaseResponse<>(getBrandPostRes);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
 
     // 가나다순
     @ResponseBody
