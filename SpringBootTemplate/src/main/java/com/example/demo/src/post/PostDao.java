@@ -40,7 +40,7 @@ public class PostDao {
                 "from Post P " +
                 "LEFT OUTER JOIN PostImg PI on P.postIdx = PI.postIdx " +
                 "LEFT OUTER JOIN Zzim Z on P.postIdx = Z.postIdx " +
-                "where P.status = 'A' " +
+                "where P.status = 'A' and IF(P.sellingStatus = \"판매중\", true, false) " +
                 "group by PI.postIdx, P.postIdx";
 
         return this.jdbcTemplate.query(getPostsQuery,
@@ -134,7 +134,7 @@ public class PostDao {
                 "LEFT OUTER JOIN HashTag HT on P.postIdx = HT.postIdx " +
                 "where ((LOCATE(" + query + ", P.postTitle) > 0) or (LOCATE(" + query + ", P.postContent) > 0) or " +
                 "(LOCATE(" + query + ", HT.hashTagName) > 0) " +
-                "and P.status = 'A') " +
+                "and P.status = 'A' and IF(P.sellingStatus = \"판매중\", true, false)) " +
                 "group by PI.postIdx, P.postIdx";
         return this.jdbcTemplate.query(getQueryPostsQuery,
                 (rs, rowNum) -> new GetPostSearchRes(
@@ -170,7 +170,7 @@ public class PostDao {
                 "from Post P " +
                 "LEFT OUTER JOIN PostImg PI on P.postIdx = PI.postIdx " +
                 "LEFT OUTER JOIN User U on P.userIdx = U.userIdx " +
-                "where U.status='A' and P.status = 'A' and U.userIdx = ? " +
+                "where U.status='A' and P.status = 'A' and U.userIdx = ? and IF(P.sellingStatus = \"판매중\", true, false) " +
                 "group by P.postIdx";
         return this.jdbcTemplate.query(getQueryStorePostQuery,
                 (rs, rowNum) -> new GetPostStorePostRes(
@@ -249,7 +249,7 @@ public class PostDao {
                 "from Post P " +
                 "LEFT OUTER JOIN Zzim Z on P.postIdx = Z.postIdx " +
                 "LEFT OUTER JOIN TalkRoom TR on P.postIdx = TR.postIdx " +
-                "where P.postIdx = 12 and P.status = 'A'";
+                "where P.postIdx = 12 and P.status = 'A' and IF(P.sellingStatus = \"판매중\", true, false)";
         return this.jdbcTemplate.queryForObject(getPostQuery,
                 (rs, rowNum) -> new GetPostRes(
                         rs.getLong("postIdx"),
@@ -304,7 +304,7 @@ public class PostDao {
                 "P.price, P.postTitle, IF(P.payStatus = 'N', false, true) as payStatus " +
                 "from Post P " +
                 "LEFt OUTER JOIN PostImg PI on P.postIdx = PI.postIdx " +
-                "where P.status='A' and P.categoryIdx = ? " +
+                "where IF(P.sellingStatus = \"판매중\", true, false) and P.status='A' and P.categoryIdx = ? " +
                 "group by P.postIdx, PI.postIdx";
         return this.jdbcTemplate.query(getCategoryPostQuery,
                 (rs, rowNum) -> new GetCategoryPostRes(
