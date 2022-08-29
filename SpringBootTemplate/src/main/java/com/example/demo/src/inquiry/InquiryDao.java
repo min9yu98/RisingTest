@@ -24,10 +24,8 @@ public class InquiryDao {
     public void createInquiry(CreateInquiryReq createInquiryReq, int userIdx, int orderIdx) {
         String createInquiryQuery = "insert into Inquiry(userIdx, category, orderIdx, description, inquiryUrl) values(?,?,?,?,?)"; //
         Object[] createInquiryParams = new Object[]{userIdx,createInquiryReq.getCategory(),orderIdx, createInquiryReq.getDescription(), createInquiryReq.getInquiryUrl()
-        }; // 동적 쿼리의 ?부분에 주입될 값
+        };
         this.jdbcTemplate.update(createInquiryQuery, createInquiryParams);
-        // email -> postUserReq.getEmail(), password -> postUserReq.getPassword(), nickname -> postUserReq.getNickname() 로 매핑(대응)시킨다음 쿼리문을 실행한다.
-        // 즉 DB의 User Table에 (email, password, nickname)값을 가지는 유저 데이터를 삽입(생성)한다.
     }
 
     public List<GetMyInquiryRes> getMyInquiry(int userIdx) {
