@@ -1,9 +1,6 @@
 package com.example.demo.src.brand;
 
-import com.example.demo.src.brand.model.GetBrandRes;
-import com.example.demo.src.brand.model.PatchDeleteBrandReq;
-import com.example.demo.src.brand.model.PostBrandReq;
-import com.example.demo.src.brand.model.PostFollowReq;
+import com.example.demo.src.brand.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -58,6 +55,31 @@ public class BrandDao {
                         rs.getString("brandEngName"),
                         rs.getLong("postNum")
                 ));
+    }
+
+    public List<GetBrandPostRes> getBrandPost(long brandIdx, long userIdx) {
+        String getBrandPostQuery = "select P.postIdx, (select PI.postImg_url LIMIT 1) as postImg_url, " +
+                "(select exists(select zzimIdx from Zzim where userIdx = ? and postIdx = P.postIdx)) as zzimStatus, " +
+                "IF(P.payStatus='N', false, true) as payStatus, P.price, P.postTitle " +
+                "from Post P " +
+                "LEFT OUTER JOIN PostImg PI on P.postIdx = PI.postIdx " +
+                "LEFT OUTER JOIN Zzim Z on P.postIdx = Z.postIdx " +
+                "LEFT OUTER JOIN HashTag HT on P.postIdx = HT.postIdx " +
+                "where P.status = 'A' and IF((select LOCATE((select B.brandName from Brand B where B.brandIdx = ?), HT.hashTagName) > 0) = 1, true, false) " +
+                "group by PI.postIdx, P.postIdx";
+        Object[] getBrandPostParams = new Object[]{
+                userIdx,
+                brandIdx
+        };
+        return this.jdbcTemplate.query(getBrandPostQuery,
+                (rs, rowNum) -> new GetBrandPostRes(
+                        rs.getLong("postIdx"),
+                        rs.getString("postImg_url"),
+                        rs.getBoolean("zzimStatus"),
+                        rs.getBoolean("payStatus"),
+                        rs.getInt("price"),
+                        rs.getString("postTitle")
+                ), getBrandPostParams);
     }
 
     public List<GetBrandRes> getMyBrand(boolean check, long userIdx) {

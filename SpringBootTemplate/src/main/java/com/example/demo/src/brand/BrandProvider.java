@@ -1,7 +1,10 @@
 package com.example.demo.src.brand;
 
 import com.example.demo.config.BaseException;
+import com.example.demo.src.brand.model.GetBrandPostRes;
 import com.example.demo.src.brand.model.GetBrandRes;
+import com.example.demo.src.post.PostGeneric;
+import com.example.demo.src.post.model.get.GetPostsRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +48,16 @@ public class BrandProvider {
             }
             return brandDao.getMyBrand(flag, userIdx);
         } catch (Exception exception){
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public List<GetBrandPostRes> getBrandPost(long brandIdx, long userIdx, long pageNum) throws BaseException{
+        try {
+            PostGeneric<GetBrandPostRes> postGeneric = new PostGeneric<>();
+            postGeneric.setPostsRes(brandDao.getBrandPost(brandIdx, userIdx));
+            return postGeneric.printResult(pageNum);
+        } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
     }
