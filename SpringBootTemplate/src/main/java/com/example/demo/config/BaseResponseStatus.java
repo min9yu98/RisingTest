@@ -44,6 +44,9 @@ public enum BaseResponseStatus {
     PATCH_EDIT_FAIL_POST(false, 2030, "게시글 수정에 실패하였습니다."),
     POST_REVIEW_INVALID_STAR_NUM(false, 2031, "별 개수를 정해주세요."),
     POST_REVIEW_EMPTY(false, 2032, "리뷰를 작성해주세요."),
+    POST_ACCOUNT_EMPTY_ACCOUNT_HOLDER(false, 2033, "예금주를 입력해주세요."),
+    POST_ACCOUNT_EMTPY_BANK(false, 2034, "은행을 선택해주세요."),
+    POST_ACCOUNT_EMPTY_ACCOUNT_NUM(false, 2035, "계좌번호를 입력해주세요."),
 
 
     /**
@@ -57,6 +60,7 @@ public enum BaseResponseStatus {
     FAILED_TO_LOGIN(false,3014,"없는 아이디거나 비밀번호가 틀렸습니다."),
     PATCH_EMPTY_BAN(false, 3015, "차단 목록에 존재하지 않는 상점입니다."),
 //    PAGE_LIMIT(false, 3016, "존재하지 않는 페이지입니다."),
+    POST_OVER_ACCOUNT_QUANTITY(false, 3017, "계좌는 두개까지 입력가능합니다."),
 
 
 
