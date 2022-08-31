@@ -9,6 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Objects;
+
+import static com.example.demo.config.BaseResponseStatus.POST_AUTHENTICATION_FAILURE;
 
 @Service
 public class MessageService {
@@ -35,10 +38,11 @@ public class MessageService {
         }
     }
 
-    public boolean checkAuth(String pwd, String authpwd) throws BaseException { // pwd : 사용자의 인증번호, authpwd : 정답 인증번호
-        if (pwd != authpwd){
-            throw new BaseException(POST_AUTHENTICATION_FAILURE);
+    public boolean checkAuth(String pwd, String authpwd){ // pwd : 사용자의 인증번호, authpwd : 정답 인증번호
+        if (!Objects.equals(pwd, authpwd)){
+            return false;
         }
+        return true;
     }
 
 

@@ -1,5 +1,6 @@
 package com.example.demo.src.message;
 
+import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.src.post.PostProvider;
 import org.slf4j.Logger;
@@ -37,12 +38,13 @@ public class MessageController {
     }
 
     @PostMapping("/check")
-    public BaseResponse<String> check(@RequestBody PostCheckReq postCheckReq){
-
-        String resultMessage = "인증실패하였습니다";
-        if (Objects.equals(numStr, postCheckReq.getNumStr())){
+    public BaseResponse<String> check(@RequestBody PostCheckReq postCheckReq) {
+        String resultMessage = "인증 실패하였습니다.";
+        if (messageService.checkAuth(postCheckReq.getNumStr(), numStr)){
             resultMessage = "인증되었습니다.";
         }
+
+
         return new BaseResponse<>(resultMessage);
     }
 }
