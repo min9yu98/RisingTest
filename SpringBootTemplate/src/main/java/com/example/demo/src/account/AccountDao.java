@@ -60,6 +60,12 @@ public class AccountDao {
     }
 
     public int deleteAccount(PatchDeleteAccountReq patchDeleteAccountReq) {
+        String changeAccountQuery = "update Account set defaultAccount = 1 where accountUserIdx = ?";
+        this.jdbcTemplate.update(changeAccountQuery, patchDeleteAccountReq.getUserIdx());
+
+        String changeAccountQuery2 = "update Account set defaultAccount = 0 where accountIdx = ?";
+        this.jdbcTemplate.update(changeAccountQuery2, patchDeleteAccountReq.getAccountIdx());
+
         String deleteAccountQuery = "update Account A set A.status = 'D' where A.accountIdx = ?";
         return this.jdbcTemplate.update(deleteAccountQuery, patchDeleteAccountReq.getAccountIdx());
     }

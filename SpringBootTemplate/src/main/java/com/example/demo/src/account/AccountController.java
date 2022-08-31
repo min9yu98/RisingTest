@@ -40,10 +40,10 @@ public class AccountController {
     }
 
     @ResponseBody
-    @PatchMapping("/delete/{accountIdx}")
-    public BaseResponse<String> deleteAccount(@PathVariable("accountIdx") long accountIdx){
+    @PatchMapping("/{userIdx}/delete/{accountIdx}")
+    public BaseResponse<String> deleteAccount(@PathVariable("userIdx") long userIdx, @PathVariable("accountIdx") long accountIdx){
         try {
-            PatchDeleteAccountReq patchDeleteAccountReq = new PatchDeleteAccountReq(accountIdx);
+            PatchDeleteAccountReq patchDeleteAccountReq = new PatchDeleteAccountReq(accountIdx, userIdx);
             int result = accountService.deleteAccount(patchDeleteAccountReq);
 
             String resultMessage = "계좌가 삭제되었습니다.";
