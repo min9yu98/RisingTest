@@ -151,12 +151,12 @@ public class PostDao {
 
     // 상점 검색시 조회되는 상점 정보
     public GetPostStoreRes getQueryStore(long userIdx) {
-        String getQueryStoreQuery = "select U.storeName, U.userRegion, U.description " +
+        String getQueryStoreQuery = "select U.userName, U.userRegion, U.description " +
                 "from User U " +
                 "where U.userIdx = ?";
         return this.jdbcTemplate.queryForObject(getQueryStoreQuery,
                 (rs, rowNum) -> new GetPostStoreRes(
-                        rs.getString("storeName"),
+                        rs.getString("userName"),
                         rs.getString("userRegion"),
                         rs.getString("description")
                 ), userIdx);
@@ -185,19 +185,20 @@ public class PostDao {
 
     // 상점 검색어 목록 (검색어를 검색했을 때 나오는 상품들 X, 상점 부분에서 상점이름들의 목록)
     public List<GetPostStoreSearchQueryRes> getQueryStoreList(String query) {
-        String getQueryStoreQuery = "select U.userIdx, U.profileImg_url, U.storeName, COUNT(DISTINCT F.followeeUserIdx) as followerNum, " +
+        String getQueryStoreQuery = "select U.userIdx, U.profileImg_url, U.userName, COUNT(DISTINCT F.followeeUserIdx) as followerNum, " +
                 "(select (case when P.status='A' THEN COUNT(DISTINCT P.postIdx) " +
                 "when P.status='D' THEN COUNT(DISTINCT P.postIdx) - 1 " +
                 "else (select 0) end)) as postNum " +
                 "from User U " +
                 "LEFT OUTER JOIN Post P on U.userIdx = P.userIdx " +
                 "LEFT OUTER JOIN Follow F on U.userIdx = F.followerUserIdx " +
-                "where (LOCATE(" + query + ", U.storeName) > 0) and U.status = 'A' " +
+                "where (LOCATE(" + query + ", U.userName) > 0) and U.status = 'A' " +
                 "group by P.userIdx, F.followIdx LIMIT 20";
         return this.jdbcTemplate.query(getQueryStoreQuery,
                 (rs, rowNum) -> new GetPostStoreSearchQueryRes(
+                        rs.getLong("userIdx"),
                         rs.getString("profileImg_url"),
-                        rs.getString("storeName"),
+                        rs.getString("userName"),
                         rs.getLong("followerNum"),
                         rs.getLong("postNum")
                 ));

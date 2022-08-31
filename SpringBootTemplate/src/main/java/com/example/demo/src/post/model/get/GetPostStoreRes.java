@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetPostStoreRes {
-    private String storeName;
+    private String userName;
     private String userRegion;
     private String description;
 }

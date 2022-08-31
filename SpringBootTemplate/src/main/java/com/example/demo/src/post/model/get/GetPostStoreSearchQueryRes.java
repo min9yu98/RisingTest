@@ -10,8 +10,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetPostStoreSearchQueryRes {
+    private long userIdx;
     private String profileImg_url;
-    private String storeName;
+    private String userName;
     private long followerNum;
     private long postNum;
 }
