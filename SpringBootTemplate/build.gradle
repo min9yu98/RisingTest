@@ -27,6 +27,7 @@ repositories {
 
 //스프링 부트 디펜던시 추가 하는곳
 dependencies {
+    compile group: 'net.nurigo', name: 'javaSDK', version: '2.2'
     implementation 'org.jetbrains:annotations:19.0.0'
 
     implementation 'org.json:json:20190722'

@@ -44,7 +44,7 @@ public enum BaseResponseStatus {
     POST_ACCOUNT_EMPTY_ACCOUNT_HOLDER(false, 2033, "예금주를 입력해주세요."),
     POST_ACCOUNT_EMTPY_BANK(false, 2034, "은행을 선택해주세요."),
     POST_ACCOUNT_EMPTY_ACCOUNT_NUM(false, 2035, "계좌번호를 입력해주세요."),
-
+    POST_AUTHENTICATION_FAILURE(false, 2036, "인증번호가 틀립니다."),
 
     /**
      * 3000 : Response 오류
@@ -59,6 +59,7 @@ public enum BaseResponseStatus {
 //    PAGE_LIMIT(false, 3016, "존재하지 않는 페이지입니다."),
     POST_OVER_ACCOUNT_QUANTITY(false, 3017, "계좌는 두개까지 입력가능합니다."),
     PATCH_ALREADY_DELETED_ACCOUNT(false, 3018, "이미 삭제된 계좌입니다."),
+    POST_BAN_SECESSION_USER(false, 3019, "존재하지 않는 상점입니다."),
 
 
     /**
@@ -71,10 +72,7 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_USERNAME(false,4014,"유저네임 수정 실패"),
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
     PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다."),
-    POST_BAN_SECESSION_USER(false, 4013, "존재하지 않는 상점입니다."),
-    PATCH_EDIT_FAIL_POST(false, 4014, "게시글 수정에 실패하였습니다."),
-    PATCH_DELETE_FAIL_POST(false, 4015, "삭제에 실패하였습니다."),
-    PATCH_DELETE_FAIL_BRAND(false, 4016, "브랜드 삭제에 실패하였습니다.");
+    PATCH_DELETE_FAIL_BRAND(false, 4016, "브랜드 삭제에 실패하였습니다."); // 브랜드 삭제는 관리자 부분이므로 무시
 
 
 
