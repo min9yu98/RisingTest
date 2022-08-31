@@ -2,7 +2,9 @@ package com.example.demo.src.message;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
+import com.example.demo.config.BaseResponseStatus;
 import com.example.demo.src.post.PostProvider;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Objects;
 import java.util.Random;
 
+import static com.example.demo.config.BaseResponseStatus.POST_AUTHENTICATION_FAILURE;
+import static com.example.demo.config.BaseResponseStatus.POST_AUTHENTICATION_FAILURE_PHONENUM;
+
 @RestController
 @RequestMapping("/app/auth")
 public class MessageController {
@@ -20,21 +25,24 @@ public class MessageController {
     @Autowired
     private final MessageService messageService;
 
+
+    public static String numStr;
     public MessageController(MessageService messageService) {
         this.messageService = messageService;
     }
-    public static String numStr = "";
 
     @ResponseBody
     @PostMapping("/check/sendSMS")
-    public String sendSMS(@RequestBody PostAuthReq postAuthReq){
-        Random rand = new Random();
-        for (int i = 0; i < 4; i++){
-            String ran = Integer.toString(rand.nextInt(10));
-            numStr += ran;
+    public BaseResponse<String> sendSMS(@RequestBody PostAuthReq postAuthReq){
+        try{
+            if (postAuthReq.getPhoneNumber() == null){
+                return new BaseResponse<>(POST_AUTHENTICATION_FAILURE_PHONENUM);
+            }
+            numStr = messageService.sendSMS(postAuthReq);
+            return new BaseResponse<>(numStr);
+        } catch (BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
         }
-        messageService.certifiedPhoneNumber(postAuthReq.getPhoneNumber(), numStr);
-        return numStr;
     }
 
     @PostMapping("/check")
@@ -43,8 +51,6 @@ public class MessageController {
         if (messageService.checkAuth(postCheckReq.getNumStr(), numStr)){
             resultMessage = "인증되었습니다.";
         }
-
-
         return new BaseResponse<>(resultMessage);
     }
 }

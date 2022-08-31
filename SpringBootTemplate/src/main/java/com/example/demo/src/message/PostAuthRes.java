@@ -10,5 +10,5 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostAuthRes {
-    private String numStr;
+    private String pwd;
 }

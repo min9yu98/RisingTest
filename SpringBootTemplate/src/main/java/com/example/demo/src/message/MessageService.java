@@ -10,8 +10,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.Random;
 
 import static com.example.demo.config.BaseResponseStatus.POST_AUTHENTICATION_FAILURE;
+import static com.example.demo.config.BaseResponseStatus.POST_AUTHENTICATION_FAILURE_PHONENUM;
+import static com.example.demo.src.message.MessageController.numStr;
 
 @Service
 public class MessageService {
@@ -46,4 +49,20 @@ public class MessageService {
     }
 
 
+    public String sendSMS(PostAuthReq postAuthReq) throws BaseException {
+        try {
+            String num = "";
+            Random rand = new Random();
+            for (int i = 0; i < 4; i++){
+                String ran = Integer.toString(rand.nextInt(10));
+                num += ran;
+            }
+            certifiedPhoneNumber(postAuthReq.getPhoneNumber(), num);
+            numStr = num;
+            return numStr;
+        } catch (Exception exception){
+            throw new BaseException(POST_AUTHENTICATION_FAILURE);
+        }
+
+    }
 }

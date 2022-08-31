@@ -44,8 +44,8 @@ public enum BaseResponseStatus {
     POST_ACCOUNT_EMPTY_ACCOUNT_HOLDER(false, 2033, "예금주를 입력해주세요."),
     POST_ACCOUNT_EMTPY_BANK(false, 2034, "은행을 선택해주세요."),
     POST_ACCOUNT_EMPTY_ACCOUNT_NUM(false, 2035, "계좌번호를 입력해주세요."),
-    POST_AUTHENTICATION_FAILURE(false, 2036, "인증번호가 틀립니다."),
-
+    POST_AUTHENTICATION_FAILURE_PHONENUM(false, 2036, "전화번호를 입력해주세요."),
+    POST_AUTHENTICATION_FAILURE(false, 2037, "인증에 실패하였습니다."),
     /**
      * 3000 : Response 오류
      */
