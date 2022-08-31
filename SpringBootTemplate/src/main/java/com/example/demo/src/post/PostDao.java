@@ -323,13 +323,17 @@ public class PostDao {
                 "LEFT OUTER JOIN HashTag HT on P.postIdx = HT.postIdx " +
                 "LEFT OUTER JOIN PostImg PI on P.postIdx = PI.postIdx " +
                 "LEFT OUTER JOIN PostReview PR on P.postIdx = PR.postIdx " +
-                "LEFT OUTER JOIN TradeHistory TH on P.postIdx = TH.postIdx " +
                 "LEFT OUTER JOIN Zzim Z on P.postIdx = Z.postIdx " +
-                "set P.status = 'D', HT.status = 'D', PI.status = 'D', PR.status = 'D', TH.status = 'D', Z.status = 'D' " +
+                "set P.status = 'D', HT.status = 'D', PI.status = 'D', PR.status = 'D', Z.status = 'D' " +
                 "where P.postIdx = ? and P.userIdx = ?";
         Object[] deletePostParams = new Object[]{patchDeletePostReq.getPostIdx(), patchDeletePostReq.getUserIdx()}; // 주입될 값들(nickname, userIdx) 순
 
         return this.jdbcTemplate.update(deletePostQuery, deletePostParams);
+    }
+
+    public int checkPostDelete(long postIdx){
+        String check = "select IF(status='D', true, false) from Post where postIdx = ?";
+        return this.jdbcTemplate.queryForObject(check, int.class, postIdx);
     }
 
     // 게시글 편집

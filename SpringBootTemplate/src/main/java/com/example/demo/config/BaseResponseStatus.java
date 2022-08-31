@@ -36,12 +36,9 @@ public enum BaseResponseStatus {
     POST_POST_EMPTY_TAG(false, 2022, "태그를 입력해주세요."),
     POST_POST_NOT_ENOUGH_PRICE(false, 2023, "100원 이상 입력해주세요."),
     POST_POST_OVER_POST_IMG(false, 2024, "입력 가능한 사진 갯수를 초과하였습니다."),
-    PATCH_DELETE_FAIL_POST(false, 2025, "삭제에 실패하였습니다."),
     POST_BRAND_EMPTY_IMG(false, 2026, "브랜드 사진을 등록해주세요."),
     POST_BRAND_EMPTY_NAME(false, 2027, "브랜드 한국어 이름을 입력해주세요."),
     POST_BRAND_EMPTY_ENG_NAME(false, 2028, "브랜드 영어 이름을 입력해주세요."),
-    PATCH_DELETE_FAIL_BRAND(false, 2029, "브랜드 삭제에 실패하였습니다."),
-    PATCH_EDIT_FAIL_POST(false, 2030, "게시글 수정에 실패하였습니다."),
     POST_REVIEW_INVALID_STAR_NUM(false, 2031, "별 개수를 정해주세요."),
     POST_REVIEW_EMPTY(false, 2032, "리뷰를 작성해주세요."),
     POST_ACCOUNT_EMPTY_ACCOUNT_HOLDER(false, 2033, "예금주를 입력해주세요."),
@@ -61,8 +58,7 @@ public enum BaseResponseStatus {
     PATCH_EMPTY_BAN(false, 3015, "차단 목록에 존재하지 않는 상점입니다."),
 //    PAGE_LIMIT(false, 3016, "존재하지 않는 페이지입니다."),
     POST_OVER_ACCOUNT_QUANTITY(false, 3017, "계좌는 두개까지 입력가능합니다."),
-
-
+    PATCH_ALREADY_DELETED_ACCOUNT(false, 3018, "이미 삭제된 계좌입니다."),
 
 
     /**
@@ -75,7 +71,10 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_USERNAME(false,4014,"유저네임 수정 실패"),
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
     PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다."),
-    POST_BAN_SECESSION_USER(false, 4013, "존재하지 않는 상점입니다.");
+    POST_BAN_SECESSION_USER(false, 4013, "존재하지 않는 상점입니다."),
+    PATCH_EDIT_FAIL_POST(false, 4014, "게시글 수정에 실패하였습니다."),
+    PATCH_DELETE_FAIL_POST(false, 4015, "삭제에 실패하였습니다."),
+    PATCH_DELETE_FAIL_BRAND(false, 4016, "브랜드 삭제에 실패하였습니다.");
 
 
 

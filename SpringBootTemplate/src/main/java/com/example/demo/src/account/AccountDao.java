@@ -59,6 +59,11 @@ public class AccountDao {
                 int.class, checkParams);
     }
 
+    public int checkDelete(long accountIdx){
+        String check = "select IF(status = 'D', true, false) from Account where accountIdx = ?";
+        return this.jdbcTemplate.queryForObject(check, int.class, accountIdx);
+    }
+
     public int deleteAccount(PatchDeleteAccountReq patchDeleteAccountReq) {
         String changeAccountQuery = "update Account set defaultAccount = 1 where accountUserIdx = ?";
         this.jdbcTemplate.update(changeAccountQuery, patchDeleteAccountReq.getUserIdx());

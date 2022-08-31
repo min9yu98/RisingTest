@@ -221,9 +221,8 @@ public class PostController {
             if (patchEditPostReq.getPostImg_url() != null && patchEditPostReq.getPostImg_url().size() > 12){
                 return new BaseResponse<>(POST_POST_OVER_POST_IMG);
             }
-            int result = postService.editPost(patchEditPostReq, userIdx, postIdx);
 
-            if (result == 0) return new BaseResponse<>(PATCH_EDIT_FAIL_POST);
+            int result = postService.editPost(patchEditPostReq, userIdx, postIdx);
 
             String resultMessage = "게시글이 수정되었습니다.";
             return new BaseResponse<>(resultMessage);
@@ -238,9 +237,6 @@ public class PostController {
         try {
             PatchDeletePostReq patchDeletePostReq = new PatchDeletePostReq(userIdx, postIdx);
             int result = postService.deletePost(patchDeletePostReq);
-
-            if (result == 0) return new BaseResponse<>(PATCH_DELETE_FAIL_POST);
-
             String resultMessage = "게시글이 삭제되었습니다.";
             return new BaseResponse<>(resultMessage);
         } catch (BaseException exception) {

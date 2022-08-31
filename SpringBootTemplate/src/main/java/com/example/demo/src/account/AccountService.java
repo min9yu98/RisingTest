@@ -50,6 +50,9 @@ public class AccountService {
     }
 
     public int deleteAccount(PatchDeleteAccountReq patchDeleteAccountReq) throws BaseException{
+        if (accountDao.checkDelete(patchDeleteAccountReq.getAccountIdx()) == 1){
+            throw new BaseException(PATCH_ALREADY_DELETED_ACCOUNT);
+        }
         try {
             int result = accountDao.deleteAccount(patchDeleteAccountReq);
             return result;

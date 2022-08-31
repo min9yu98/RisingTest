@@ -1,6 +1,7 @@
 package com.example.demo.src.post;
 
 import com.example.demo.config.BaseException;
+import com.example.demo.config.BaseResponse;
 import com.example.demo.src.post.model.patch.PatchDeletePostReq;
 import com.example.demo.src.post.model.patch.PatchEditPostReq;
 import com.example.demo.src.post.model.patch.PatchEditPostRes;
@@ -57,7 +58,7 @@ public class PostService {
             int result = postDao.deletePost(patchDeletePostReq); // 해당 과정이 무사히 수행되면 True(1), 그렇지 않으면 False(0)입니다.
             return result;
         } catch (Exception exception){
-            throw new BaseException(DATABASE_ERROR);
+            throw new BaseException(PATCH_DELETE_FAIL_POST);
         }
     }
 
@@ -72,7 +73,7 @@ public class PostService {
             int result = (int)postDao.editPost(patchEditPostReq, userIdx, postIdx);
             return result;
         } catch(Exception exception){
-            throw new BaseException(DATABASE_ERROR);
+            throw new BaseException(PATCH_EDIT_FAIL_POST);
         }
     }
 }
