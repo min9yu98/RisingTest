@@ -26,11 +26,11 @@ public class PostGeneric<T> {
         List<T> arr = new ArrayList<>();
         if (checkPage(pageNum, page)) {
             if (page == pageNum) {
-                for (long i = (pageNum - 1) % 20; i < 20 * (pageNum - 1) + (size % 20); i++) {
+                for (long i = (pageNum - 1) % 20; i <= 20 * (pageNum - 1) + (size % 20); i++) {
                     arr.add(getPostsRes.get((int) i));
                 }
             } else {
-                for (long i = (pageNum - 1) * 20; i < 20 * pageNum - 1; i++) {
+                for (long i = (pageNum - 1) * 20; i <= 20 * pageNum - 1; i++) {
                     arr.add(getPostsRes.get((int) i));
                 }
             }
