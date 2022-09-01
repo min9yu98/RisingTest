@@ -60,7 +60,9 @@ public class AccountController {
             if(userIdx != userIdxByJwt){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
-            PatchDeleteAccountReq patchDeleteAccountReq = new PatchDeleteAccountReq(accountIdx, userIdx);
+            PatchDeleteAccountReq patchDeleteAccountReq = new PatchDeleteAccountReq();
+            patchDeleteAccountReq.setAccountIdx(accountIdx);
+            patchDeleteAccountReq.setUserIdx(userIdx);
             int result = accountService.deleteAccount(patchDeleteAccountReq);
 
             String resultMessage = "계좌가 삭제되었습니다.";
