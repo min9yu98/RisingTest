@@ -10,5 +10,5 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostFollowRes {
-    private long brandIdx;
+    private long success;
 }

@@ -11,6 +11,7 @@ import com.example.demo.src.post.model.post.PostPostReq;
 import com.example.demo.src.post.model.post.PostPostRes;
 import com.example.demo.src.post.model.post.PostReviewReq;
 import com.example.demo.src.post.model.post.PostReviewRes;
+import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +30,14 @@ public class PostController {
     private final PostProvider postProvider;
     @Autowired
     private final PostService postService;
+    @Autowired
+    private final JwtService jwtService;
 
 
-    public PostController(PostProvider postProvider, PostService postService) {
+    public PostController(PostProvider postProvider, PostService postService, JwtService jwtService) {
         this.postProvider = postProvider;
         this.postService = postService;
+        this.jwtService = jwtService;
     }
 
     // 게시글 전체 조회
@@ -41,6 +45,11 @@ public class PostController {
     @GetMapping("/{userIdx}/posts/{pageNum}") // 로그인 때문에
     public BaseResponse<List<GetPostsRes>> getPosts(@PathVariable("userIdx") long userIdx, @PathVariable("pageNum") long pageNum) {
         try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인 !!!!
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             List<GetPostsRes> getPostingsRes = postProvider.getPosts(userIdx, pageNum);
             return new BaseResponse<>(getPostingsRes);
         } catch (BaseException exception) {
@@ -53,6 +62,11 @@ public class PostController {
     @GetMapping("/{userIdx}/{postIdx}")
     public BaseResponse<GetPostRes> getPost(@PathVariable("userIdx") long userIdx, @PathVariable("postIdx") long postIdx){
         try{
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인 !!!!
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             GetPostRes getPostRes = postProvider.getPost(userIdx, postIdx);
             return new BaseResponse<>(getPostRes);
         } catch (BaseException exception) {
@@ -92,6 +106,11 @@ public class PostController {
                                                                   @PathVariable("idx") int idx,
                                                                   @PathVariable("pageNum") long pageNum){
         try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인 !!!!
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             if (mainCategory.equals("중고거래") || mainCategory.equals("\"중고거래\"")){
                 idx += 12;
             } else if (mainCategory.equals("생활") || mainCategory.equals("\"생활\"")){
@@ -110,6 +129,11 @@ public class PostController {
                                                               @PathVariable("userIdx") long userIdx,
                                                               @PathVariable("pageNum") long pageNum){
         try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인 !!!!
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             List<GetPostSearchRes> getPostsRes = postProvider.getQueryPosts(query, userIdx, pageNum);
             return new BaseResponse<>(getPostsRes);
         } catch(BaseException exception){
@@ -119,10 +143,16 @@ public class PostController {
 
     // 상점정보
     @ResponseBody
-    @GetMapping("/{userIdx}/search-store")
-    public BaseResponse<GetPostStoreRes> getQueryStore(@PathVariable("userIdx") long userIdx){
+    @GetMapping("/{userIdx}/search-store/{storeUserIdx}")
+    public BaseResponse<GetPostStoreRes> getQueryStore(@PathVariable("userIdx") long userIdx,
+                                                       @PathVariable("storeUserIdx") long storeUserIdx){
         try{
-            GetPostStoreRes getPostStoreRes = postProvider.getQueryStore(userIdx);
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인 !!!!
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            GetPostStoreRes getPostStoreRes = postProvider.getQueryStore(storeUserIdx);
             return new BaseResponse<>(getPostStoreRes);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
@@ -136,6 +166,11 @@ public class PostController {
                                                                      @PathVariable("storeUserIdx") long storeUserIdx,
                                                                      @PathVariable("pageNum") long pageNum){
         try{
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인 !!!!
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             List<GetPostStorePostRes> getPostStorePostRes = postProvider.getQueryStorePost(userIdx, storeUserIdx, pageNum);
             return new BaseResponse<>(getPostStorePostRes);
         } catch(BaseException exception){
@@ -175,6 +210,11 @@ public class PostController {
         if (postReviewReq.getReview() == null) return new BaseResponse<>(POST_REVIEW_EMPTY);
 
         try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인 !!!!
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             PostReviewRes postReviewRes = postService.registerReview(postReviewReq, postIdx, userIdx);
             return new BaseResponse<>(postReviewRes);
         } catch (BaseException exception){
@@ -207,6 +247,11 @@ public class PostController {
 
 
         try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인 !!!!
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             PostPostRes postPostRes = postService.registerPost(postPostReq, userIdx);
             return new BaseResponse<>(postPostRes);
         } catch (BaseException exception){
@@ -218,6 +263,11 @@ public class PostController {
     @PatchMapping("/{userIdx}/edit/{postIdx}")
     public BaseResponse<String> editPost(@RequestBody PatchEditPostReq patchEditPostReq, @PathVariable("userIdx") long userIdx, @PathVariable("postIdx") long postIdx){
         try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인 !!!!
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             if (patchEditPostReq.getPostImg_url() != null && patchEditPostReq.getPostImg_url().size() > 12){
                 return new BaseResponse<>(POST_POST_OVER_POST_IMG);
             }
@@ -235,6 +285,11 @@ public class PostController {
     @PatchMapping("/{userIdx}/delete/{postIdx}")
     public BaseResponse<String> deletePost(@PathVariable("userIdx") long userIdx, @PathVariable("postIdx") long postIdx){
         try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인 !!!!
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             PatchDeletePostReq patchDeletePostReq = new PatchDeletePostReq(userIdx, postIdx);
             int result = postService.deletePost(patchDeletePostReq);
             String resultMessage = "게시글이 삭제되었습니다.";

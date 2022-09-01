@@ -125,7 +125,7 @@ public class PostDao {
     // 게시글 검색 결과
     public List<GetPostSearchRes> getQueryPosts(String query, long userIdx) {
         String getQueryPostsQuery = "select P.postIdx, (select PI.postImg_url LIMIT 1) as postImg_url, " +
-                "(select exists(select zzimIdx from Zzim where userIdx=" + userIdx + " and postIdx = P.postIdx)) as zzimStatus," +
+                "(select exists(select zzimIdx from Zzim where userIdx=? and postIdx = P.postIdx)) as zzimStatus, " +
                 "P.price, P.postTitle, " +
                 "IF(P.payStatus='N', false, true) as payStatus, P.sellingStatus " +
                 "from Post P " +
@@ -145,7 +145,7 @@ public class PostDao {
                         rs.getString("postTitle"),
                         rs.getBoolean("payStatus"),
                         rs.getString("sellingStatus")
-                        ) // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
+                        ), userIdx // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
         );
     }
 
@@ -301,12 +301,13 @@ public class PostDao {
     // 카테고리에 맞는 게시물들 불러오기
     public List<GetCategoryPostRes> getCategoryPost(long userIdx, int idx) {
         String getCategoryPostQuery = "select P.postIdx, (select DISTINCT PI.postImg_url LIMIT 1) as postImg_url, " +
-                "(select exists(select zzimIdx from Zzim where userIdx=" + userIdx + " and postIdx = P.postIdx)) as zzimStatus, " +
+                "(select exists(select zzimIdx from Zzim where userIdx=? and postIdx = P.postIdx)) as zzimStatus, " +
                 "P.price, P.postTitle, IF(P.payStatus = 'N', false, true) as payStatus " +
                 "from Post P " +
                 "LEFt OUTER JOIN PostImg PI on P.postIdx = PI.postIdx " +
                 "where IF(P.sellingStatus = \"판매중\", true, false) and P.status='A' and P.categoryIdx = ? " +
                 "group by P.postIdx, PI.postIdx";
+        Object[] getCategoryPostParams = new Object[]{userIdx, idx};
         return this.jdbcTemplate.query(getCategoryPostQuery,
                 (rs, rowNum) -> new GetCategoryPostRes(
                         rs.getLong("postIdx"),
@@ -315,7 +316,7 @@ public class PostDao {
                         rs.getInt("price"),
                         rs.getString("postTitle"),
                         rs.getBoolean("payStatus")
-                ), idx);
+                ), getCategoryPostParams);
     }
 
     // 게시글 삭제
