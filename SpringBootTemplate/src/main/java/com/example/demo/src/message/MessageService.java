@@ -20,8 +20,8 @@ import static com.example.demo.src.message.MessageController.numStr;
 public class MessageService {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
     public void certifiedPhoneNumber(String phoneNumber, String cerNum) {
-        String api_key = "NCSUOMQEX8RIT8YP";
-        String api_secret = "0PX14PVQ0JNKOIJ64MTUSDDCNACHTIY2";
+        String api_key = "NCSHZED2LAFPK3ZP";
+        String api_secret = "1NOA9TFKEXMW9UBZBSVQS7AB5VPMG3CK";
         Message coolsms = new Message(api_key, api_secret);
 
         // 4 params(to, from, type, text) are mandatory. must be filled
