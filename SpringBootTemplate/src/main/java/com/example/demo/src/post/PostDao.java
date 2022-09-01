@@ -209,13 +209,13 @@ public class PostDao {
         String getQueryPostQuery =
                 "select DISTINCT SUBSTRING_INDEX(P.postTitle, ' ', LOCATE("+ query +", P.postTitle)) as searchWord " +
                 "from Post P " +
-                "where P.status='A' and (LOCATE("+ query +", P.postTitle) > 0) UNION ALL " +
+                "where P.status='A' and (LOCATE("+ query +", P.postTitle) > 0) UNION  " +
                 "select DISTINCT SUBSTRING_INDEX(P.postTitle, ' ', LOCATE("+ query +", P.postTitle) + 1) as Num " +
                 "from Post P " +
-                "where P.status='A' and (LOCATE("+ query +", P.postTitle) > 0) UNION ALL " +
+                "where P.status='A' and (LOCATE("+ query +", P.postTitle) > 0) UNION  " +
                 "select DISTINCT SUBSTRING_INDEX(P.postTitle, ' ', LOCATE("+ query +", P.postTitle) + 2) as Num " +
                 "from Post P " +
-                "where P.status='A' and (LOCATE("+ query +", P.postTitle) > 0) UNION ALL " +
+                "where P.status='A' and (LOCATE("+ query +", P.postTitle) > 0) UNION  " +
                 "select DISTINCT SUBSTRING_INDEX(HT.hashTagName, ' ', LOCATE("+ query +", HT.hashTagName)) as searchWord " +
                 "from HashTag HT " +
                 "LEFT OUTER JOIN Post P on HT.postIdx = P.postIdx " +
