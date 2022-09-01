@@ -5,6 +5,7 @@ import com.example.demo.config.BaseResponse;
 import com.example.demo.src.brand.model.*;
 import com.example.demo.src.post.model.post.PostPostReq;
 import com.example.demo.src.post.model.post.PostPostRes;
+import com.example.demo.utils.JwtService;
 import com.fasterxml.jackson.databind.ser.Serializers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,11 +27,14 @@ public class BrandController {
     private final BrandProvider brandProvider;
     @Autowired
     private final BrandService brandService;
+    @Autowired
+    private final JwtService jwtService;
 
 
-    public BrandController(BrandProvider brandProvider, BrandService brandService) {
+    public BrandController(BrandProvider brandProvider, BrandService brandService, JwtService jwtService) {
         this.brandProvider = brandProvider;
         this.brandService = brandService;
+        this.jwtService = jwtService;
     }
 
     @ResponseBody
@@ -60,6 +64,11 @@ public class BrandController {
     public BaseResponse<PostFollowRes> followBrand(@PathVariable("userIdx") long userIdx,
                                                    @PathVariable("brandIdx") long brandIdx){
         try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인 !!!!
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             PostFollowRes postFollowRes = brandService.followBrand(userIdx, brandIdx);
             return new BaseResponse<>(postFollowRes);
         } catch (BaseException exception){
@@ -90,6 +99,11 @@ public class BrandController {
     @PatchMapping("/{userIdx}/follow-cancel/{brandIdx}")
     public BaseResponse<String> cancelFollow(@PathVariable("userIdx") long userIdx, @PathVariable("brandIdx") long brandIdx){
         try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인 !!!!
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             brandService.cancelFollow(userIdx, brandIdx);
 
             String resultMessage = "팔로우가 취소되었습니다.";
@@ -99,12 +113,18 @@ public class BrandController {
         }
     }
 
+    // 브랜드별 게시글 조회
     @ResponseBody
     @GetMapping("/{brandIdx}/{userIdx}/posts/{pageNum}")
     public BaseResponse<List<GetBrandPostRes>> getBrandPost(@PathVariable("brandIdx") long brandIdx,
                                                       @PathVariable("userIdx") long userIdx,
                                                       @PathVariable("pageNum") long pageNum){
         try {
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인 !!!!
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             List<GetBrandPostRes>getBrandPostRes = brandProvider.getBrandPost(brandIdx, userIdx, pageNum);
             return new BaseResponse<>(getBrandPostRes);
         } catch(BaseException exception){
@@ -129,6 +149,11 @@ public class BrandController {
     @GetMapping("/order/{lang}/{userIdx}")
     public BaseResponse<List<GetBrandRes>> getMyBrand(@PathVariable("lang") String lang, @PathVariable("userIdx") long userIdx){
         try{
+            int userIdxByJwt = jwtService.getUserIdx();
+            //userIdx와 접근한 유저가 같은지 확인 !!!!
+            if(userIdx != userIdxByJwt){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             List<GetBrandRes> getBrandRes = brandProvider.getMyBrand(lang, userIdx);
             return new BaseResponse<>(getBrandRes);
         } catch (BaseException exception){
