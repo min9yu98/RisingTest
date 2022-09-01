@@ -250,7 +250,7 @@ public class PostDao {
                 "from Post P " +
                 "LEFT OUTER JOIN Zzim Z on P.postIdx = Z.postIdx " +
                 "LEFT OUTER JOIN TalkRoom TR on P.postIdx = TR.postIdx " +
-                "where P.postIdx = 12 and P.status = 'A' and IF(P.sellingStatus = \"판매중\", true, false)";
+                "where P.postIdx = ? and P.status = 'A' and IF(P.sellingStatus = \"판매중\", true, false)";
         return this.jdbcTemplate.queryForObject(getPostQuery,
                 (rs, rowNum) -> new GetPostRes(
                         rs.getLong("postIdx"),
@@ -269,7 +269,7 @@ public class PostDao {
                         rs.getString("postContent"),
                         rs.getString("sellingStatus"),
                         rs.getBoolean("zzimStatus")
-                ));
+                ), postIdx);
     }
 
     // 게시글의 사진들 불러오기
