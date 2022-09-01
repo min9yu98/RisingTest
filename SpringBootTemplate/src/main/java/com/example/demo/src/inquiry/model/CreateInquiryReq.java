@@ -2,12 +2,14 @@ package com.example.demo.src.inquiry.model;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class CreateInquiryReq {
-    String category;
-    String description;
-    String inquiryUrl;
+    private String category;
+    private String description;
+    private List<String> inquiry_Url;
 }

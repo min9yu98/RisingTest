@@ -33,25 +33,24 @@ public class InquiryController {
         this.jwtService = jwtService;
     }
 
-//    @ResponseBody
-//    @PostMapping("/create/{userIdx}/{orderIdx}")
-//    public BaseResponse<String> createInquiry(@RequestBody CreateInquiryReq createInquiryReq,
-//                                            @PathVariable("userIdx") int userIdx,
-//                                            @PathVariable("orderIdx") int orderIdx)
-//    {
-//        try {
-////            //jwt에서 idx 추출.
-////            int userIdxByJwt = jwtService.getUserIdx();
-////            //userIdx와 접근한 유저가 같은지 확인
-////            if(userIdx != userIdxByJwt){
-////                return new BaseResponse<>(INVALID_USER_JWT);
-////            }
-//            inquiryService.createInquiry(createInquiryReq, userIdx, orderIdx);
-//            return new BaseResponse<String>("고객문의가 등록되었습니다");
-//        } catch (BaseException exception) {
-//            return new BaseResponse<>((exception.getStatus()));
-//        }
-//    }
+    @ResponseBody
+    @PostMapping("/create/{userIdx}")
+    public BaseResponse<String> createInquiry(@RequestBody CreateInquiryReq createInquiryReq,
+                                            @PathVariable("userIdx") int userIdx)
+    {
+        try {
+//            //jwt에서 idx 추출.
+//            int userIdxByJwt = jwtService.getUserIdx();
+//            //userIdx와 접근한 유저가 같은지 확인
+//            if(userIdx != userIdxByJwt){
+//                return new BaseResponse<>(INVALID_USER_JWT);
+//            }
+            inquiryService.createInquiry(createInquiryReq, userIdx);
+            return new BaseResponse<String>("고객문의가 등록되었습니다");
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 
 
     @ResponseBody
@@ -72,25 +71,25 @@ public class InquiryController {
         }
     }
 
-//
-//    @ResponseBody
-//    @GetMapping("/specific/{userIdx}/{inquiryIdx}")
-//    public BaseResponse<InquirySpecificRes> createInquiry(@PathVariable("userIdx") int userIdx,
-//                                              @PathVariable("inquiryIdx") int inquiryIdx)
-//    {
-//        try {
-////            //jwt에서 idx 추출.
-////            int userIdxByJwt = jwtService.getUserIdx();
-////            //userIdx와 접근한 유저가 같은지 확인
-////            if(userIdx != userIdxByJwt){
-////                return new BaseResponse<>(INVALID_USER_JWT);
+
+    @ResponseBody
+    @GetMapping("/specific/{userIdx}/{inquiryIdx}")
+    public BaseResponse<InquirySpecificRes> createInquiry(@PathVariable("userIdx") int userIdx,
+                                              @PathVariable("inquiryIdx") int inquiryIdx)
+    {
+        try {
+//            //jwt에서 idx 추출.
+//            int userIdxByJwt = jwtService.getUserIdx();
+//            //userIdx와 접근한 유저가 같은지 확인
+//            if(userIdx != userIdxByJwt){
+//                return new BaseResponse<>(INVALID_USER_JWT);
 //            }
-//            InquirySpecificRes inquirySpecificRes = inquiryProvider.getInquirySpecific(inquiryIdx);
-//            return new BaseResponse<>(inquirySpecificRes);
-//        } catch (BaseException exception) {
-//            return new BaseResponse<>((exception.getStatus()));
-//        }
-//    }
+            InquirySpecificRes inquirySpecificRes = inquiryProvider.getInquirySpecific(inquiryIdx);
+            return new BaseResponse<>(inquirySpecificRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 
     @ResponseBody
     @GetMapping("")
@@ -118,4 +117,18 @@ public class InquiryController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    @ResponseBody
+    @PatchMapping("/delete/{userIdx}/{inquiryIdx}")
+    public BaseResponse<String> getMyInquiry(@PathVariable("userIdx") int userIdx,
+                                             @PathVariable("inquiryIdx") int inquiryIdx)
+    {
+        try {
+            inquiryService.deleteInquiry(userIdx,inquiryIdx);
+            return new BaseResponse<>("문의 사항이 삭제 되었습니다");
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
 }
