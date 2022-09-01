@@ -19,7 +19,8 @@ import lombok.Setter;
  */
 public class GetUserRes {
     private int userIdx;
-    private String nickname;
-    private String email;
-    private String password;
+    private String userName;
+    private String userBirth;
+    private String userPhoneNum;
+    private String profileImg_url;
 }

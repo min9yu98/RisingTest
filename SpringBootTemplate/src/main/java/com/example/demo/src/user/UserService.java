@@ -2,6 +2,7 @@ package com.example.demo.src.user;
 
 
 import com.example.demo.config.BaseException;
+import com.example.demo.config.BaseResponse;
 import com.example.demo.config.secret.Secret;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.AES128;
@@ -11,6 +12,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import javax.sql.DataSource;
 import static com.example.demo.config.BaseResponseStatus.*;
 
@@ -75,6 +81,16 @@ public class UserService {
             if (result == 0) { // result값이 0이면 과정이 실패한 것이므로 에러 메서지를 보냅니다.
                 throw new BaseException(MODIFY_FAIL_USERNAME);
             }
+        } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지를 보냅니다.
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    @Transactional
+    public void deleteUser(int userIdx) throws BaseException {
+        try {
+            userDao.deleteUser(userIdx);
+
         } catch (Exception exception) { // DB에 이상이 있는 경우 에러 메시지를 보냅니다.
             throw new BaseException(DATABASE_ERROR);
         }

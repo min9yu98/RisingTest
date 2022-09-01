@@ -173,4 +173,22 @@ public class UserController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    @ResponseBody
+    @PatchMapping("/delete/{userIdx}")
+    public BaseResponse<String> deleteFollow(@PathVariable("userIdx") int userIdx)
+    {
+        try {
+//            //jwt에서 idx 추출.
+//            int userIdxByJwt = jwtService.getUserIdx();
+//            //userIdx와 접근한 유저가 같은지 확인
+//            if(userIdx != userIdxByJwt){
+//                return new BaseResponse<>(INVALID_USER_JWT);
+//            }
+            userService.deleteUser(userIdx);
+            return new BaseResponse<>("탈퇴가 완료 되었습니다");
+        } catch (BaseException exception) {
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
 }

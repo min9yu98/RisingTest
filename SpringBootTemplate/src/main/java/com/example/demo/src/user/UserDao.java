@@ -100,13 +100,14 @@ public class UserDao {
 
     // User 테이블에 존재하는 전체 유저들의 정보 조회
     public List<GetUserRes> getUsers() {
-        String getUsersQuery = "select * from User"; //User 테이블에 존재하는 모든 회원들의 정보를 조회하는 쿼리
+        String getUsersQuery = "select userIdx, userName, userBirth,userPhoneNum, profileImg_url from User;"; //User 테이블에 존재하는 모든 회원들의 정보를 조회하는 쿼리
         return this.jdbcTemplate.query(getUsersQuery,
                 (rs, rowNum) -> new GetUserRes(
                         rs.getInt("userIdx"),
-                        rs.getString("nickname"),
-                        rs.getString("Email"),
-                        rs.getString("password")) // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
+                        rs.getString("userName"),
+                        rs.getString("userBirth"),
+                        rs.getString("userPhoneNum"),
+                        rs.getString("profileImg_url")) // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
         ); // 복수개의 회원정보들을 얻기 위해 jdbcTemplate 함수(Query, 객체 매핑 정보)의 결과 반환(동적쿼리가 아니므로 Parmas부분이 없음)
     }
 
@@ -117,9 +118,10 @@ public class UserDao {
         return this.jdbcTemplate.query(getUsersByNicknameQuery,
                 (rs, rowNum) -> new GetUserRes(
                         rs.getInt("userIdx"),
-                        rs.getString("nickname"),
-                        rs.getString("Email"),
-                        rs.getString("password")), // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
+                        rs.getString("userName"),
+                        rs.getString("userBirth"),
+                        rs.getString("userPhoneNum"),
+                        rs.getString("profileImg_url")), // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
                 getUsersByNicknameParams); // 해당 닉네임을 갖는 모든 User 정보를 얻기 위해 jdbcTemplate 함수(Query, 객체 매핑 정보, Params)의 결과 반환
     }
 
@@ -130,9 +132,17 @@ public class UserDao {
         return this.jdbcTemplate.queryForObject(getUserQuery,
                 (rs, rowNum) -> new GetUserRes(
                         rs.getInt("userIdx"),
-                        rs.getString("nickname"),
-                        rs.getString("Email"),
-                        rs.getString("password")), // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
+                        rs.getString("userName"),
+                        rs.getString("userBirth"),
+                        rs.getString("userPhoneNum"),
+                        rs.getString("profileImg_url")), // RowMapper(위의 링크 참조): 원하는 결과값 형태로 받기
                 getUserParams); // 한 개의 회원정보를 얻기 위한 jdbcTemplate 함수(Query, 객체 매핑 정보, Params)의 결과 반환
+    }
+
+
+    public void deleteUser(int userIdx) {
+        String Query = "delete from User WHERE userIdx = ?"; //
+        Object[] Params = new Object[]{userIdx};
+        this.jdbcTemplate.update(Query, Params);
     }
 }
