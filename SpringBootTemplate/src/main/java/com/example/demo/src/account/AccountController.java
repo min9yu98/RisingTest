@@ -39,11 +39,11 @@ public class AccountController {
     @PostMapping("/new/{userIdx}")
     public BaseResponse<PostAccountRes> registerAccount(@RequestBody PostAccountReq postAccountReq, @PathVariable("userIdx") long userIdx){
         try {
-            int userIdxByJwt = jwtService.getUserIdx();
-            //userIdx와 접근한 유저가 같은지 확인 !!!!
-            if(userIdx != userIdxByJwt){
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
+//            int userIdxByJwt = jwtService.getUserIdx();
+//            //userIdx와 접근한 유저가 같은지 확인 !!!!
+//            if(userIdx != userIdxByJwt){
+//                return new BaseResponse<>(INVALID_USER_JWT);
+//            }
             PostAccountRes postAccountRes = accountService.registerAccount(postAccountReq, userIdx);
             return new BaseResponse<>(postAccountRes);
         } catch (BaseException exception){
@@ -55,11 +55,11 @@ public class AccountController {
     @PatchMapping("/{userIdx}/delete/{accountIdx}")
     public BaseResponse<String> deleteAccount(@PathVariable("userIdx") long userIdx, @PathVariable("accountIdx") long accountIdx){
         try {
-            int userIdxByJwt = jwtService.getUserIdx();
-            //userIdx와 접근한 유저가 같은지 확인 !!!!
-            if(userIdx != userIdxByJwt){
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
+//            int userIdxByJwt = jwtService.getUserIdx();
+//            //userIdx와 접근한 유저가 같은지 확인 !!!!
+//            if(userIdx != userIdxByJwt){
+//                return new BaseResponse<>(INVALID_USER_JWT);
+//            }
             PatchDeleteAccountReq patchDeleteAccountReq = new PatchDeleteAccountReq();
             patchDeleteAccountReq.setAccountIdx(accountIdx);
             patchDeleteAccountReq.setUserIdx(userIdx);
@@ -77,11 +77,11 @@ public class AccountController {
     @GetMapping("/{userIdx}")
     public BaseResponse<List<GetAccountRes>> getAccounts(@PathVariable("userIdx") long userIdx){
         try {
-            int userIdxByJwt = jwtService.getUserIdx();
-            //userIdx와 접근한 유저가 같은지 확인 !!!!
-            if(userIdx != userIdxByJwt){
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
+//            int userIdxByJwt = jwtService.getUserIdx();
+//            //userIdx와 접근한 유저가 같은지 확인 !!!!
+//            if(userIdx != userIdxByJwt){
+//                return new BaseResponse<>(INVALID_USER_JWT);
+//            }
             List<GetAccountRes>getAccountRes = accountProvider.getAccounts(userIdx);
             return new BaseResponse<>(getAccountRes);
         } catch(BaseException exception){
@@ -95,11 +95,11 @@ public class AccountController {
                                             @PathVariable("userIdx") long userIdx,
                                             @PathVariable("accountIdx") long accountIdx){
         try{
-            int userIdxByJwt = jwtService.getUserIdx();
-            //userIdx와 접근한 유저가 같은지 확인 !!!!
-            if(userIdx != userIdxByJwt){
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
+//            int userIdxByJwt = jwtService.getUserIdx();
+//            //userIdx와 접근한 유저가 같은지 확인 !!!!
+//            if(userIdx != userIdxByJwt){
+//                return new BaseResponse<>(INVALID_USER_JWT);
+//            }
             int result = accountService.editAccount(patchEditAccountReq, userIdx, accountIdx);
             String resultMessage = "계좌가 수정되었습니다.";
             return new BaseResponse<>(resultMessage);

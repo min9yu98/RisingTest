@@ -35,11 +35,11 @@ public class BanController {
     public BaseResponse<PostBanRes> banUser(@PathVariable("banUserIdx") long banUserIdx,
                                             @PathVariable("bannedUserIdx") long bannedUserIdx){
         try {
-            int userIdxByJwt = jwtService.getUserIdx();
-            //userIdx와 접근한 유저가 같은지 확인 !!!!
-            if(banUserIdx != userIdxByJwt){
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
+//            int userIdxByJwt = jwtService.getUserIdx();
+//            //userIdx와 접근한 유저가 같은지 확인 !!!!
+//            if(banUserIdx != userIdxByJwt){
+//                return new BaseResponse<>(INVALID_USER_JWT);
+//            }
             PostBanRes postBanRes = banService.banUser(banUserIdx, bannedUserIdx);
             return new BaseResponse<>(postBanRes);
         } catch (BaseException exception) {
@@ -52,11 +52,11 @@ public class BanController {
     public BaseResponse<String> cancelBan(@PathVariable("banUserIdx") long banUserIdx,
                                           @PathVariable("bannedUserIdx") long bannedUserIdx){
         try{
-            int userIdxByJwt = jwtService.getUserIdx();
-            //userIdx와 접근한 유저가 같은지 확인 !!!!
-            if(banUserIdx != userIdxByJwt){
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
+//            int userIdxByJwt = jwtService.getUserIdx();
+//            //userIdx와 접근한 유저가 같은지 확인 !!!!
+//            if(banUserIdx != userIdxByJwt){
+//                return new BaseResponse<>(INVALID_USER_JWT);
+//            }
             int result = banService.cancelBan(banUserIdx, bannedUserIdx);
 
             if (result == 0) return new BaseResponse<>(PATCH_EMPTY_BAN);

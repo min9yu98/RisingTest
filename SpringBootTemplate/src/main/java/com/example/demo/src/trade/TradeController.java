@@ -30,11 +30,11 @@ public class TradeController {
     @PostMapping("/{userIdx}/{postIdx}")
     public BaseResponse<PostTradeRes> trade(@PathVariable("userIdx") long userIdx, @PathVariable("postIdx") long postIdx){
         try {
-            int userIdxByJwt = jwtService.getUserIdx();
-            //userIdx와 접근한 유저가 같은지 확인 !!!!
-            if(userIdx != userIdxByJwt){
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
+//            int userIdxByJwt = jwtService.getUserIdx();
+//            //userIdx와 접근한 유저가 같은지 확인 !!!!
+//            if(userIdx != userIdxByJwt){
+//                return new BaseResponse<>(INVALID_USER_JWT);
+//            }
             PostTradeRes postTradeRes = tradeService.trade(userIdx, postIdx);
             return new BaseResponse<>(postTradeRes);
         } catch (BaseException exception){
