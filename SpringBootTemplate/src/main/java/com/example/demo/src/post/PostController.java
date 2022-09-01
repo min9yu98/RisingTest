@@ -104,13 +104,14 @@ public class PostController {
     public BaseResponse<List<GetCategoryPostRes>> getCategoryPost(@PathVariable("userIdx") long userIdx,
                                                                   @PathVariable("mainCategory") String mainCategory,
                                                                   @PathVariable("idx") int idx,
-                                                                  @PathVariable("pageNum") long pageNum){
+                                                                  @PathVariable("pageNum") int pageNum){
         try {
             int userIdxByJwt = jwtService.getUserIdx();
             //userIdx와 접근한 유저가 같은지 확인 !!!!
             if(userIdx != userIdxByJwt){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
+
             if (mainCategory.equals("중고거래") || mainCategory.equals("\"중고거래\"")){
                 idx += 12;
             } else if (mainCategory.equals("생활") || mainCategory.equals("\"생활\"")){

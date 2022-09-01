@@ -113,7 +113,7 @@ public class PostProvider {
     }
 
     // 카테고리 클릭시 나오는 게시글들 조회
-    public List<GetCategoryPostRes> getCategoryPost(long userIdx, int idx, long pageNum) throws BaseException{
+    public List<GetCategoryPostRes> getCategoryPost(long userIdx, int idx, int pageNum) throws BaseException{
         try {
             PostGeneric<GetCategoryPostRes> postGeneric = new PostGeneric<>();
             postGeneric.setPostsRes(postDao.getCategoryPost(userIdx, idx));
