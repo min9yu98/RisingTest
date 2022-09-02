@@ -231,10 +231,7 @@ public class PostDao {
         String registerPostImgQuery = "update Post " +
                 "set view = Post.view + 1 " +
                 "where postIdx = ?";
-        Object[] registerPostImgParams = new Object[]{
-                postIdx
-        };
-        this.jdbcTemplate.update(registerPostImgQuery, registerPostImgParams);
+        this.jdbcTemplate.update(registerPostImgQuery, postIdx);
 
         String getPostQuery = "select P.postIdx, P.price, IF(P.payStatus='N', false, true) as payStatus, P.postTitle, P.tradeRegion, " +
                 "(select (case when timestampdiff(second, P.createAt, current_timestamp) < 60 " +
